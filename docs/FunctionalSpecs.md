@@ -1,6 +1,6 @@
 ## Functional Specifications
  
-###Background
+### Background
 
 Respiratory syncytial virus (RSV) is a common respiratory virus that, in healthy adults, usually causes an illness similar to the common cold. However, in infants and the elderly, RSV infection causes severe disease. RSV is the leading cause of pneumonia in infants less than one year of age and is a leading cause of hospitalization due to acute respiratory tract infections in both infants and young children. 
 
@@ -10,7 +10,7 @@ Furthermore, it is known that for some respiratory viruses, such as rhinovirus, 
 
 Together our project, `RSView`, will provide an important resource for better understanding the global circulation dynamics of RSV and investigating the effects of genotype on disease severity. We recognize that this is very much a "first-pass" analysis, but believe these analyses and, especially, this framework for examining RSV (which is modeled off of the nextstrain.org platform developed by Trevor Bedford and Richard Neher) could prove quite useful for the field.
 
-###User Profile
+### User Profile
 
 RSView is an analysis of the global distribution of RSV subtypes intended for laboratory scientists and clinicians. In
 order to access the RSView, users will navigate to the Github repository where it is stored
@@ -19,7 +19,7 @@ this is not necessary in order for the user to understand or interact with the a
 will be able to view the code used to generate the interactive subtype distribution map, plots of correlations between
 RSV subtypes and childhood deaths, and other analyses.
 
-###Data Sources
+### Data Sources
 
 RSView utilizes publicly available viral sequence data and metadata from
 [GenBank](https://www.ncbi.nlm.nih.gov/genbank/). This data is downloaded in .fasta format. Specifically, the genetic
@@ -28,7 +28,7 @@ Metadata that associated with these sequences is used to locate the virus tempor
 childhood deaths due to pneumonia is taken from [UNICEF](https://data.unicef.org/topic/child-health/pneumonia/). This
 data is available in tabular format.
 
-###Use Cases
+### Use Cases
 
 RSView is intended to be used by clinicians and laboratory scientists.
 

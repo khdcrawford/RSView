@@ -20,7 +20,7 @@ def organize_data(datafiles):
         rsv_df = rsv_df.append(temp_df, ignore_index=True)
 
     rsv_df['year'] = rsv_df['collection_date'].apply(lambda x: x.year)
-    
+
     #Fix specific country names where city is given
     countries_with_cities = ['Brazil','China','Russia','New Zealand','Spain',
                              'Germany','Egypt', 'India','Japan',
@@ -67,7 +67,7 @@ def jitter_locs(organized_df, jitter_dict):
     return organized_df
 
 def map_rsv(organized_df, cmap, year_range, subtype_list):
-    scale_markers = 4
+    scale_markers = 1
 
     map_list = []
     for i in range(len(organized_df)):
@@ -79,7 +79,8 @@ def map_rsv(organized_df, cmap, year_range, subtype_list):
             lat = [organized_df.loc[i,'adj_lat']],
             lon = [organized_df.loc[i,'adj_lon']],
             marker = dict(
-                size = np.min([organized_df.loc[i,'count']*scale_markers, 75]), #Threshold max size of marker
+                size = [np.min([organized_df.loc[i,'count']*scale_markers, 75])], #Threshold max size of marker
+                sizemin = 5,
                 color = cmap[organized_df.loc[i,'subtype']],
                 line = dict(width=0.5, color='rgb(40,40,40)'),
                 opacity=0.5,

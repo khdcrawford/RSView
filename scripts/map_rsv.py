@@ -20,7 +20,20 @@ def organize_data(datafiles):
         rsv_df = rsv_df.append(temp_df, ignore_index=True)
 
     rsv_df['year'] = rsv_df['collection_date'].apply(lambda x: x.year)
-    rsv_df['country'] = np.where(rsv_df['country'].str.contains('USA'),'United States',rsv_df['country']) #Change US states to USA
+    
+    #Fix specific country names where city is given
+    countries_with_cities = ['Brazil','China','Russia','New Zealand','Spain',
+                             'Germany','Egypt', 'India','Japan',
+                             'Malaysia','Jordan', 'Saudi Arabia','Myanmar', 'Netherlands']
+    for c in countries_with_cities:
+        rsv_df['country'] = np.where(rsv_df['country'].str.contains(c),c,rsv_df['country'])
+
+    #Fix specific country names where lat/lon table uses alternate country name
+    rsv_df['country'] = np.where(rsv_df['country'].str.contains('USA'),'United States',rsv_df['country'])
+    rsv_df['country'] = np.where(rsv_df['country'].str.contains('South Korea'),'Korea',rsv_df['country'])
+    rsv_df['country'] = np.where(rsv_df['country'].str.contains('Viet Nam'),'Vietnam',rsv_df['country'])
+    rsv_df['country'] = np.where(rsv_df['country'].str.contains('Laos'),'Lao PDR',rsv_df['country'])
+
 
     #use lat and long so datapoints can be jittered to show multiple subtypes
     #lat and long data from https://worldmap.harvard.edu/data/geonode:country_centroids_az8

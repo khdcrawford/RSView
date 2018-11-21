@@ -5,24 +5,23 @@ import re
 
 Entrez.email = "dusenk@uw.edu"
 
-outfile = './data/RSVG_gb_metadata_5000-10000.csv'
+outfile = './data/RSVG_gb_metadata_test.csv'
 
 database = "nuccore"
-maxseqs = 10000
+maxseqs = 7000
 query = "human respiratory syncytial virus G"
 filetype = "gb"
 outmode = "xml"
-batchsize = 100
-begin = 5000
+begin = 5001
 
-#Make generator and use regex to allow for whitespace between letters and numbers
+batchsize = min(maxseqs - begin, 100)
 
 #Write argparser
 
-GT_LIST = ['GA1', 'GA2', 'GA3', 'GA4', 'GA5', 'GA6', 'GA7', 'NA1', 'NA2', 
-		   'SAA1', 'ON1', 'GB1', 'GB2', 'GB3', 'GB4', 'SAB1', 'SAB2', 'SAB3',
-		   'SAB4', 'URU1', 'URU2', 'BA1', 'BA2', 'BA3', 'BA4', 'BA5', 'BA6',
-		   'BA7', 'BA8', 'BA9', 'BA10', 'BA11', 'BA12', 'THB']
+GT_LIST = [r'\bGA\s?[0-9]*\b', r'\bNA\s?[0-9]*\b', r'\bSAA\s?[0-9]*\b', 
+		   r'\bON\s?[0-9]*\b', r'\bGB\s?[0-9]*\b', r'\bSAB\s?[0-9]*\b', 
+		   r'\bURU\s?[0-9]*\b', r'\bBA\s?[0-9]*\b', r'\bBA\s?IV\b', 
+		   r'\bTHB\b']
 
 
 def getIDs(db, retmax, term):
@@ -34,8 +33,15 @@ def getIDs(db, retmax, term):
 	print('Search returned {0} hits.'.format(len(search_IDs)))
 	return search_IDs
 
-def gethandle(db, ids, firstseq, numseqs, rettype, retmode):
-	handle = Entrez.efetch(db=db, id=ids, retstart=firstseq, retmax=numseqs, 
+def gethandle(db, ids, firstseq, dload_size, rettype, retmode):
+	"""
+	Download Entrez 'handle' for downloading seqs of interest
+
+	Args:
+		required by Entrez
+	"""
+
+	handle = Entrez.efetch(db=db, id=ids, retstart=firstseq, retmax=dload_size, 
 			 rettype=rettype, retmode=retmode)
 	return handle
 
@@ -72,8 +78,8 @@ def find_genotype(meta_dict, genotype_list):
 	for value in meta_dict.values():
 		if 'genotype:' in value:
 			for gt in genotype_list:
-				if gt in value:
-					genotype = gt
+				if re.search(gt, value):
+					genotype = re.findall(gt, value)[0]
 	return genotype
 
 
@@ -83,11 +89,26 @@ def makedf(handle):
 	for record in records:
 		sub_dict = {}
 		features = record['GBSeq_feature-table']
+
+		#Retrieve metadata
 		strain_quals = features[0]['GBFeature_quals']
 		for qual in strain_quals:
 			qual_dict = dict(qual)
 			sub_dict[qual_dict['GBQualifier_name']] = \
 					qual_dict['GBQualifier_value']
+
+		#Retrieve G protein sequence
+		for feat_dict in features[1:]:
+			if 'GBFeature_quals' in feat_dict.keys():
+				for feat_qual in feat_dict['GBFeature_quals']:
+					if 'GBQualifier_value' in feat_qual.keys():
+						if re.search(r'\bG\b', feat_qual['GBQualifier_value'])\
+								or re.search(r'\battachment.*protein\b', 
+								             feat_qual['GBQualifier_value']):
+							G_quals = feat_dict['GBFeature_quals']
+							for q in G_quals:
+								if q['GBQualifier_name'] == 'translation':
+									sub_dict['G_seq'] = q['GBQualifier_value']
 
 		sub_dict['subtype'] = find_subtype(sub_dict)
 
@@ -105,9 +126,10 @@ def makedf(handle):
 def main():
 
 	IDs = getIDs(database, maxseqs, query)
+	numseqs = len(IDs)
 	start = begin
 	metadata_frames = []
-	while start <= (maxseqs - batchsize):
+	while start <= (numseqs - batchsize):
 		handle = gethandle(database, IDs, start, batchsize, filetype, outmode)
 		metadata_df = makedf(handle)
 		metadata_frames.append(metadata_df)
@@ -115,8 +137,16 @@ def main():
 		if start % 500 == 0:
 			print('Processed {0} seqs'.format(start))
 	
+	if start != numseqs: #Process final seqs
+		handle = gethandle(database, IDs, start, numseqs, filetype, outmode)
+		metadata_df = makedf(handle)
+		metadata_frames.append(metadata_df)
+	
 	full_df = pd.concat(metadata_frames, ignore_index=True, sort=False)
-	#print(full_df.drop('db_xref', axis=1))
+	assert len(full_df.index) == (numseqs-begin), 'Exported unexpected ' \
+			'number of seqs. Expected: {0} Retrieved: {1}'.format(
+			(numseqs-begin), len(full_df.index))
+	#print(full_df.drop(['db_xref', 'country', 'host'], axis=1))
 	full_df.to_csv(outfile)
 
 if __name__ == '__main__':

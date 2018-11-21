@@ -5,14 +5,14 @@ import re
 
 Entrez.email = "dusenk@uw.edu"
 
-outfile = './data/RSVG_gb_metadata_test.csv'
+outfile = './data/RSVG_gb_metadata_15000+.csv'
 
 database = "nuccore"
-maxseqs = 7000
+maxseqs = 20000
 query = "human respiratory syncytial virus G"
 filetype = "gb"
 outmode = "xml"
-begin = 5001
+begin = 15000
 
 batchsize = min(maxseqs - begin, 100)
 
@@ -30,7 +30,6 @@ def getIDs(db, retmax, term):
 	search_record = Entrez.read(search_handle)
 	search_handle.close()
 	search_IDs = search_record['IdList']
-	print('Search returned {0} hits.'.format(len(search_IDs)))
 	return search_IDs
 
 def gethandle(db, ids, firstseq, dload_size, rettype, retmode):
@@ -46,7 +45,14 @@ def gethandle(db, ids, firstseq, dload_size, rettype, retmode):
 	return handle
 
 def find_subtype(meta_dict):
-	"""Find subtype
+	"""
+	Find subtype from dictionary of sequence metadata.
+
+	Args:
+		meta_dict (dict): dictionary of metadata downloaded from genbank
+
+	Returns:
+		subtype (str): RSV subtype as one letter string, 'A' or 'B'.
 	"""
 
 	subtype = 'NaN'
@@ -94,8 +100,9 @@ def makedf(handle):
 		strain_quals = features[0]['GBFeature_quals']
 		for qual in strain_quals:
 			qual_dict = dict(qual)
-			sub_dict[qual_dict['GBQualifier_name']] = \
-					qual_dict['GBQualifier_value']
+			if 'GBQualifier_value' in qual_dict.keys():
+				sub_dict[qual_dict['GBQualifier_name']] = \
+						qual_dict['GBQualifier_value']
 
 		#Retrieve G protein sequence
 		for feat_dict in features[1:]:
@@ -127,15 +134,19 @@ def main():
 
 	IDs = getIDs(database, maxseqs, query)
 	numseqs = len(IDs)
+	print('Search returned {0} hits.'.format(numseqs))
+
 	start = begin
+	print('Downloading metadata for seqs: {0} to {1}'.format(start, numseqs))
+
 	metadata_frames = []
 	while start <= (numseqs - batchsize):
 		handle = gethandle(database, IDs, start, batchsize, filetype, outmode)
 		metadata_df = makedf(handle)
 		metadata_frames.append(metadata_df)
 		start = start + batchsize
-		if start % 500 == 0:
-			print('Processed {0} seqs'.format(start))
+		if (start-begin) % 500 == 0:
+			print('Processed {0} seqs'.format(start-begin))
 	
 	if start != numseqs: #Process final seqs
 		handle = gethandle(database, IDs, start, numseqs, filetype, outmode)

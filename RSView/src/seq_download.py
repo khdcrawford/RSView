@@ -3,6 +3,8 @@ import pandas as pd
 import time
 import re
 
+#Write argparser
+
 Entrez.email = "dusenk@uw.edu"
 
 outfile = './data/RSVG_gb_metadata_15000+.csv'
@@ -16,12 +18,11 @@ begin = 15000
 
 batchsize = min(maxseqs - begin, 100)
 
-#Write argparser
+GTA_LIST = [r'\bGA\s?[0-9]*\b', r'\bNA\s?[0-9]*\b', r'\bSAA\s?[0-9]*\b', 
+		   r'\bON\s?[0-9]*\b']
 
-GT_LIST = [r'\bGA\s?[0-9]*\b', r'\bNA\s?[0-9]*\b', r'\bSAA\s?[0-9]*\b', 
-		   r'\bON\s?[0-9]*\b', r'\bGB\s?[0-9]*\b', r'\bSAB\s?[0-9]*\b', 
-		   r'\bURU\s?[0-9]*\b', r'\bBA\s?[0-9]*\b', r'\bBA\s?IV\b', 
-		   r'\bTHB\b']
+GTB_LIST = [r'\bGB\s?[0-9]*\b', r'\bSAB\s?[0-9]*\b', r'\bURU\s?[0-9]*\b', 
+			r'\bBA\s?[0-9]*\b', r'\bBA\s?IV\b', r'\bTHB\b']
 
 
 def getIDs(db, retmax, term):
@@ -40,7 +41,7 @@ def gethandle(db, ids, firstseq, dload_size, rettype, retmode):
 		required by Entrez
 	"""
 
-	handle = Entrez.efetch(db=db, id=ids, retstart=firstseq, retmax=dload_size, 
+	handle = Entrez.efetch(db=db, id=ids, retstart=firstseq, retmax=dload_size,
 			 rettype=rettype, retmode=retmode)
 	return handle
 
@@ -63,30 +64,54 @@ def find_subtype(meta_dict):
 
 	elif subtype == 'NaN':
 		for val in meta_dict.values():
-			if re.search(r'RSVA\b', val) or re.search(r'type: A\b', val) or\
-					re.search(r'group: A\b', val) or re.search(r'\bA/', val):
+			if re.search(r'RSV\s?A\b', val) or \
+					re.search(r'type: A\b', val) or	\
+					re.search(r'group: A\b', val) or re.search(r'\bA\b', val):
 				subtype = 'A'
-			elif re.search(r'RSVB\b', val) or re.search(r'type: B\b', val) or\
-					re.search(r'group: B\b', val) or re.search(r'\bB/', val):
-				subtype = 'B'	
+			elif re.search(r'RSV\s?B\b', val) or \
+					re.search(r'type: B\b', val) or \
+					re.search(r'group: B\b', val) or re.search(r'\bB\b', val):
+				subtype = 'B'
 
 	return subtype
 
 
-def find_genotype(meta_dict, genotype_list):
-	"""Script for extracting genotype data from genbank metadata.
+def find_genotype(meta_dict, genotype_listA, genotype_listB):
+	"""
+	Script for extracting genotype data from genbank metadata.
+	
+	If the genotype is found, but the subtype is still 'NaN', populate
+	subtype data based on genotype. 
+
 
 	Args: 
-		meta_dict = dictionary of metadata
-		genotype_dict = list of possible genotypes
+		meta_dict (dict): dictionary of metadata
+		genotype_listA (list): list of possible genotypes for subtype A
+		genotype_listB (list): list of possible genotypes for subtype B
+
+	Returns:
+		typed_dict (dict): dictionary of metadata with genotype (and missing 
+						  subtype) data filled in.
 	"""
+	typed_dict = meta_dict
 	genotype = 'NaN'
 	for value in meta_dict.values():
 		if 'genotype:' in value:
-			for gt in genotype_list:
+			for gt in genotype_listA:
 				if re.search(gt, value):
 					genotype = re.findall(gt, value)[0]
-	return genotype
+					if meta_dict['subtype'] == 'NaN':
+						typed_dict['subtype'] = 'A'
+
+			for gt in genotype_listB:
+				if re.search(gt, value):
+					genotype = re.findall(gt, value)[0]
+					if meta_dict['subtype'] == 'NaN':
+						typed_dict['subtype'] = 'B'
+
+	typed_dict['genotype'] = genotype
+	
+	return typed_dict
 
 
 def makedf(handle):
@@ -119,7 +144,7 @@ def makedf(handle):
 
 		sub_dict['subtype'] = find_subtype(sub_dict)
 
-		sub_dict['genotype'] = find_genotype(sub_dict, GT_LIST)
+		sub_dict = find_genotype(sub_dict, GTA_LIST, GTB_LIST)
 
 		seqinfo.append(sub_dict)
 	

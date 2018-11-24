@@ -1,13 +1,13 @@
-import time
+import argparse
 import pandas as pd
 import numpy as np
 import plotly.plotly as py
 import plotly.graph_objs as go
+import matplotlib.pyplot as plt
+from matplotlib import colors
 
-CMAP= {'A':'royalblue','B':'salmon'}
 JITTER_DICT= {'A':1.0, 'B':-1.0}
-SUBTYPE_LIST=['A','B']
-DATAFILES = ['../data/RSVG_gb_metadata.csv','../data/RSVG_gb_metadata_5000-10000.csv']
+DATAFILES = ['./data/RSVG_gb_metadata_0-5000.csv','./data/RSVG_gb_metadata_5000-10000.csv', './data/RSVG_gb_metadata_10000-15000.csv', './data/RSVG_gb_metadata_15000+.csv']
 
 def organize_data(datafiles):
 
@@ -15,7 +15,7 @@ def organize_data(datafiles):
 
     for datafile in datafiles:
 
-        temp_df = pd.read_csv(datafile, usecols=['collection_date', 'country','subtype'],
+        temp_df = pd.read_csv(datafile, usecols=['collection_date', 'country','subtype', 'genotype'],
                              parse_dates=['collection_date'])
         rsv_df = rsv_df.append(temp_df, ignore_index=True)
 
@@ -34,26 +34,38 @@ def organize_data(datafiles):
     rsv_df['country'] = np.where(rsv_df['country'].str.contains('Viet Nam'),'Vietnam',rsv_df['country'])
     rsv_df['country'] = np.where(rsv_df['country'].str.contains('Laos'),'Lao PDR',rsv_df['country'])
 
+    return rsv_df
 
+
+def count_types(rsv_df, jitter_dict, level):
     #use lat and long so datapoints can be jittered to show multiple subtypes
     #lat and long data from https://worldmap.harvard.edu/data/geonode:country_centroids_az8
 
-    lat_lon = pd.read_csv('../data/country_centroids_az8.csv', \
+    lat_lon = pd.read_csv('./data/country_centroids.csv', \
                           usecols=['name','brk_a3','Longitude','Latitude']\
                          ).rename(columns={'name':'country', 'brk_a3':'country_code'})
 
-    #count number of rows(seqs) from each country that are each subtype
-    df_count_time = pd.DataFrame({'count' : rsv_df.groupby(['country', 'subtype', 'year']).size()}).reset_index()
 
-    #compile country-specific subtype count data with lat and long for plotting
-    df_countries_time = df_count_time.merge(lat_lon, how='left', left_on='country', right_on='country')
+    if level=='subtype':
+        #count number of rows(seqs) from each country that are each subtype
+        df_group = pd.DataFrame({'count' : rsv_df.groupby(['country', 'subtype', 'year']).size()}).reset_index()
 
-    return df_countries_time
+        #compile country-specific subtype count data with lat and long for plotting
+        organized_df = df_group.merge(lat_lon, how='left', left_on='country', right_on='country')
+
+    elif level=='genotype':
+        #count number of rows(seqs) from each country that are each subtype
+        genotype_subset= rsv_df[rsv_df['genotype'].notnull()]
+        df_group = pd.DataFrame({'count' : genotype_subset.groupby(['country', 'subtype', 'genotype', 'year']).size()}).reset_index()
+
+        #compile country-specific subtype count data with lat and long for plotting
+        organized_df = df_group.merge(lat_lon, how='left', left_on='country', right_on='country')
 
 
-def jitter_locs(organized_df, jitter_dict):
     #Jitter points for countries that have multiple subtypes, so markers on map don't overlap
+
     country_group = organized_df.groupby('country').size()
+
 
     #With data separated by year
     organized_df['adj_lon'] = np.where(country_group[organized_df['country']]>1,
@@ -66,36 +78,55 @@ def jitter_locs(organized_df, jitter_dict):
 
     return organized_df
 
-def map_rsv(organized_df, cmap, year_range, subtype_list):
-    scale_markers = 1
 
+def map_rsv(organized_df, level):
+
+    year_range = [year for year in range(int(organized_df.year.min()),int(organized_df.year.max()))]
+
+    if level=='subtype':
+        type_list=['A','B']
+        cmap= {'A':'royalblue','B':'salmon'}
+
+    elif level=='genotype':
+        a_genotypes = list(set(organized_df[organized_df['subtype']=='A']['genotype'].tolist()))
+        b_genotypes = list(set(organized_df[organized_df['subtype']=='B']['genotype'].tolist()))
+        type_list= a_genotypes + b_genotypes
+
+        cmap = {}
+        blues = plt.get_cmap('Blues')
+        reds = plt.get_cmap('Reds')
+
+        for a_genotype in a_genotypes:
+            cmap[a_genotype]= colors.to_hex(blues((a_genotypes.index(a_genotype)+1.0)/len(a_genotypes)))
+        for b_genotype in b_genotypes:
+            cmap[b_genotype]= colors.to_hex(reds((b_genotypes.index(b_genotype)+1.0)/len(b_genotypes)))
+
+    scale_markers = 1
     map_list = []
+
     for i in range(len(organized_df)):
 
         map_country = dict(
             type = 'scattergeo',
-    #         locationmode = 'country names',
-    #         locations = [df_countries.loc[i,'country']],
             lat = [organized_df.loc[i,'adj_lat']],
             lon = [organized_df.loc[i,'adj_lon']],
             marker = dict(
                 size = [np.min([organized_df.loc[i,'count']*scale_markers, 75])], #Threshold max size of marker
                 sizemin = 5,
-                color = cmap[organized_df.loc[i,'subtype']],
+                color = cmap[organized_df.loc[i,level]],
                 line = dict(width=0.5, color='rgb(40,40,40)'),
                 opacity=0.5,
                 sizemode = 'diameter'),
-            hovertext = (organized_df.loc[i,'country']+', subtype '+organized_df.loc[i,'subtype']+
-                         ' : '+str(organized_df.loc[i,'count'])+' sequences'),
-            name = organized_df.loc[i,'country']+' '+organized_df.loc[i,'subtype'],
-            legendgroup= organized_df.loc[i,'subtype'],
+            hovertext = (organized_df.loc[i,'country'] + ', ' + str(level) + ' ' + organized_df.loc[i,level] + ' : ' + str(organized_df.loc[i,'count'])+' sequences'),
+            name = organized_df.loc[i,'country']+' '+organized_df.loc[i,level],
+            legendgroup= organized_df.loc[i,level],
             showlegend=False,
             hoverinfo = 'text'
         )
         map_list.append(map_country)
 
     #Work around for showing legend
-    for subtype in subtype_list:
+    for subtype in type_list:
         subtype_legend = dict(
                 type = 'scattergeo',
                 lat = [180.0],
@@ -117,12 +148,12 @@ def map_rsv(organized_df, cmap, year_range, subtype_list):
         step = dict(
         method = 'restyle',
         label = year,
-        args = ['visible', [False] * (len(organized_df)+len(subtype_list))])
+        args = ['visible', [False] * (len(organized_df)+len(type_list))])
         for i in range(len(organized_df)):
             if organized_df.loc[i,'year']==year:
                 step['args'][1][i] = True # Toggle i'th year to "visible"
-        for subtype in subtype_list:
-            step['args'][1][(len(organized_df)+subtype_list.index(subtype))] = True
+        for subtype in type_list:
+            step['args'][1][(len(organized_df)+type_list.index(subtype))] = True
         steps.append(step)
 
     layout = dict(
@@ -141,14 +172,17 @@ def map_rsv(organized_df, cmap, year_range, subtype_list):
     fig = dict(data=map_list, layout=layout)
     py.plot(fig)
 
-def main():
+def main(level):
     rsv_df = organize_data(DATAFILES)
-    YEAR_RANGE = [year for year in range(int(rsv_df.year.min()),int(rsv_df.year.max()))]
-    rsv_df = jitter_locs(rsv_df, JITTER_DICT)
-    map_rsv(rsv_df, CMAP, YEAR_RANGE, SUBTYPE_LIST)
+    organized_df = count_types(rsv_df, JITTER_DICT, level)
+    map_rsv(organized_df, level)
 
 if __name__ == '__main__':
-	start_time = time.time()
-	main()
-	end_time = time.time()
-	print('Program took {0:.3f} minutes to run.'.format((end_time - start_time)/60))
+
+    parser = argparse.ArgumentParser(description="Plot global distribution of RSV")
+    parser.add_argument(
+        'level', type=str, choices=['subtype','genotype'],
+        help="Specify whether the subtype or genotype of RSV sequences should be plotted")
+    args = parser.parse_args()
+
+    main(args.level)

@@ -31,8 +31,8 @@ def organize_data(datafiles):
     rsv_df['year'] = rsv_df['collection_date'].apply(lambda x: x.year)
 
     #Fix specific country names where city is given
-    countries_with_cities = ['Brazil', 'China', 'Russia', 'New Zealand', 'Spain',
-                             'Germany', 'Egypt', 'India', 'Japan',
+    countries_with_cities = ['Brazil', 'China', 'Russia', 'New Zealand', 'Spain', 'Kenya',
+                             'Germany', 'Egypt', 'India', 'Japan', 'Canada', 'Italy',
                              'Malaysia', 'Jordan', 'Saudi Arabia', 'Myanmar', 'Netherlands']
     for con in countries_with_cities:
         rsv_df['country'] = np.where(rsv_df['country'].str.contains(con), con, rsv_df['country'])
@@ -83,7 +83,6 @@ def count_types(rsv_df, jitter_dict, level):
 
 
     #Jitter points for countries that have multiple subtypes, so markers on map don't overlap
-
     country_group = organized_df.groupby('country').size()
 
 
@@ -95,6 +94,12 @@ def count_types(rsv_df, jitter_dict, level):
     organized_df['adj_lat'] = np.where(country_group[organized_df['country']] > 1,
                                        (organized_df['Latitude']+organized_df.subtype.map(
                                            lambda x: jitter_dict[x])), organized_df['Latitude'])
+
+    #Find any country names that don't match between sequence DF and lat/lon database
+    if len(organized_df[organized_df['adj_lon'].isnull()]) != 0:
+        print('Warning: the following country names do not match between sequence DataFrames and\
+               "country_centroids.csv"' +
+              str(organized_df[organized_df['adj_lon'].isnull()]['country']))
 
     return organized_df
 

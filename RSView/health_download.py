@@ -8,7 +8,7 @@ outfile_summary = './data/health_data_summary.csv'
 def main():
 
 	# need to change path to this csv
-	df_orig = pd.read_csv('/Users/jilliane/cse/viralseq_mapping/RSView/data/health_data.csv')
+	df_orig = pd.read_csv('./data/health_data_RAW.csv')
 
 	# change index to iso3 (3 letter country codes)
 	df_orig.columns = df_orig.iloc[3]
@@ -46,30 +46,4 @@ def main():
 	# export full and summary dataframes to csv
 	df_clean.to_csv(outfile_all)
 	df_summary.to_csv(outfile_summary)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	

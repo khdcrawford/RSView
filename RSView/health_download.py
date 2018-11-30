@@ -30,12 +30,17 @@ def main():
 	for i in column_percents:
 	    df[i] = df[i].str.rstrip('%').astype('float')
 
-	df=df.replace('-', np.nan)
-	df_clean = df.dropna(axis=0, how='any').fillna(0).copy()
 
 	column_numbers = [' nnd ', ' pnd ', ' neo9 ', ' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ']
 	for i in column_numbers:
-	    df_clean[i] = df_clean[i].str.strip().str.replace(',','')
+	    df[i] = df[i].str.strip().str.replace(',','')
+
+
+	df=df.replace('-', np.nan)
+	df_clean = df.dropna(axis=0, how='any').fillna(0).copy()
+
+	for i in column_numbers:
+	    df_clean[i] = df_clean[i].astype('float')
 
 	df_clean.rename(columns={'Country/area name': 'country'}, inplace=True)
 
@@ -46,4 +51,10 @@ def main():
 	# export full and summary dataframes to csv
 	df_clean.to_csv(outfile_all)
 	df_summary.to_csv(outfile_summary)
+
+
+
+
+
+
 	

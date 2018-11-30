@@ -12,8 +12,15 @@ from matplotlib import colors
 JITTER_DICT = {'A':1.0, 'B':-1.0}
 DATAFILES = ['./data/RSVG_gb_metadata_0-5000.csv', './data/RSVG_gb_metadata_5000-10000.csv',
              './data/RSVG_gb_metadata_10000-15000.csv', './data/RSVG_gb_metadata_15000+.csv']
+GENOTYPE_DICT = {'GA2':'GA', 'GA5':'GA', 'GB12':'GB', 'GB13':'GB', 'GA3':'GA', 'NA1':'NA',
+                 'NA2':'NA', 'ON1':'ON', 'SAA1':'SAA', 'BA':'BA', 'BA10':'BA', 'BA9':'BA',
+                 'GB3':'GB', 'SAB1':'SAB', 'SAB3':'SAB', 'SAB4':'SAB', 'NA3':'NA', 'GB2':'GB',
+                 'BA11':'BA', 'BA7':'BA', 'GA7':'GA', 'BA 10':'BA', 'BA 12':'BA', 'BA 14':'BA',
+                 'BA 2':'BA', 'BA 8':'BA', 'BA 9':'BA', 'SAA2':'SAA', 'BA8':'BA', 'GA1':'GA',
+                 'BA4':'BA', 'BA5':'BA', 'BA12':'BA', 'GB1':'GB', 'BA08':'BA', 'BA09':'BA',
+                 'BA IV':'BA', 'THB':'TH'}
 
-def organize_data(datafiles):
+def organize_data(datafiles, genotype_dict):
     """
     Load .csv files containing RSV sequence data and extract relevant columns. Ensure country
     names to conform to standard names used to retrieve latitude and longitude data. Return a
@@ -29,6 +36,9 @@ def organize_data(datafiles):
         rsv_df = rsv_df.append(temp_df, ignore_index=True)
 
     rsv_df['year'] = rsv_df['collection_date'].apply(lambda x: x.year)
+
+    #Add column to group genotypes by clade
+    rsv_df = rsv_df.assign(genotype_group=rsv_df['genotype'].map(genotype_dict))
 
     #Fix specific country names where city is given
     countries_with_cities = ['Brazil', 'China', 'Russia', 'New Zealand', 'Spain', 'Kenya',
@@ -50,7 +60,7 @@ def organize_data(datafiles):
     return rsv_df
 
 
-def count_types(rsv_df, jitter_dict, level):
+def count_types(rsv_df, jitter_dict, level, genotype_level='collapse'):
     """
     Restructure the DataFrame so that each row indicates the total number of RSV sequences
     found in each country, each year, for each subtype or genotype (specified by the level argument)
@@ -74,9 +84,15 @@ def count_types(rsv_df, jitter_dict, level):
     elif level == 'genotype':
         #count number of rows(seqs) from each country that are each subtype
         genotype_subset = rsv_df[rsv_df['genotype'].notnull()]
-        df_group = pd.DataFrame(
-            {'count' : genotype_subset.groupby(['country', 'subtype', 'genotype',
-                                                'year']).size()}).reset_index()
+
+        if genotype_level == 'collapse':
+            df_group = pd.DataFrame(
+                {'count' : genotype_subset.groupby(['country', 'subtype', 'genotype_group',
+                                                    'year']).size()}).reset_index()
+        else:
+            df_group = pd.DataFrame(
+                {'count' : genotype_subset.groupby(['country', 'subtype', 'genotype',
+                                                    'year']).size()}).reset_index()
 
         #compile country-specific subtype count data with lat and long for plotting
         organized_df = df_group.merge(lat_lon, how='left', left_on='country', right_on='country')
@@ -104,7 +120,7 @@ def count_types(rsv_df, jitter_dict, level):
     return organized_df
 
 
-def map_rsv(organized_df, level):
+def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
     """
     Use ploy.ly to map RSV sequences onto a global map, with bubbles indicating the virus
     collection location. Bubbles are colored according to subtype or genotype (indicated by the
@@ -113,15 +129,27 @@ def map_rsv(organized_df, level):
     the plot allows the user to scroll through time to see how RSV distribution changes over time.
     """
 
-    year_range = [yr for yr in range(int(organized_df.year.min()), int(organized_df.year.max()))]
+    if years == 'all':
+        year_range = [yr for yr in range(int(organized_df.year.min()),
+                      int(organized_df.year.max()))]
+    else:
+        year_range = [yr for yr in range(years[0],years[1]+1)]
 
     if level == 'subtype':
         type_list = ['A', 'B']
         cmap = {'A':'royalblue', 'B':'salmon'}
 
     elif level == 'genotype':
-        a_genotypes = list(set(organized_df[organized_df['subtype'] == 'A']['genotype'].tolist()))
-        b_genotypes = list(set(organized_df[organized_df['subtype'] == 'B']['genotype'].tolist()))
+        if genotype_level == 'collapse':
+            a_genotypes = list(set(organized_df[organized_df['subtype'] == 'A']
+                                   ['genotype_group'].tolist()))
+            b_genotypes = list(set(organized_df[organized_df['subtype'] == 'B']
+                                   ['genotype_group'].tolist()))
+        else:
+            a_genotypes = list(set(organized_df[organized_df['subtype'] == 'A']
+                                   ['genotype'].tolist()))
+            b_genotypes = list(set(organized_df[organized_df['subtype'] == 'B']
+                                   ['genotype'].tolist()))
         type_list = a_genotypes + b_genotypes
 
         cmap = {}
@@ -137,6 +165,10 @@ def map_rsv(organized_df, level):
 
     scale_markers = 1
     map_list = []
+
+
+    if genotype_level=='collapse':
+        level = 'genotype_group'
 
     for i in range(len(organized_df)):
 
@@ -207,13 +239,13 @@ def map_rsv(organized_df, level):
     py.plot(fig)
 
 
-def main(level):
+def main(level, genotype_level, years):
     """
     Run organize_data, count_types, map_rsv
     """
-    rsv_df = organize_data(DATAFILES)
-    organized_df = count_types(rsv_df, JITTER_DICT, level)
-    map_rsv(organized_df, level)
+    rsv_df = organize_data(DATAFILES, GENOTYPE_DICT)
+    organized_df = count_types(rsv_df, JITTER_DICT, level, genotype_level=genotype_level)
+    map_rsv(organized_df, level, genotype_level=genotype_level, years=years)
 
 
 if __name__ == '__main__':
@@ -222,6 +254,12 @@ if __name__ == '__main__':
     PARSER.add_argument(
         'level', type=str, choices=['subtype', 'genotype'],
         help="Specify whether the subtype or genotype of RSV sequences should be plotted")
+    PARSER.add_argument(
+        '--genotype-level', type=str, choices=['collapse', 'all'], default='collapse',
+        help="Specify whether to plot all genotypes of RSV or collapse them into major clades")
+    PARSER.add_argument(
+        '--years', default=[1990,2018],
+        help="Specify a range of years to plot")
     ARGS = PARSER.parse_args()
 
-    main(ARGS.level)
+    main(ARGS.level, genotype_level=ARGS.genotype_level, years=ARGS.years)

@@ -2,6 +2,7 @@ from Bio import Entrez
 import pandas as pd
 import time
 import re
+import argparse
 
 #Write argparser
 
@@ -71,8 +72,7 @@ def gethandle(db, ids, firstseq, dload_size, rettype, retmode):
 	return handle
 
 def find_subtype(meta_dict):
-	"""
-	Find subtype from dictionary of sequence metadata.
+	"""Find subtype from dictionary of sequence metadata.
 
 	Args:
 		meta_dict (dict): dictionary of metadata downloaded from genbank
@@ -102,8 +102,7 @@ def find_subtype(meta_dict):
 
 
 def find_genotype(meta_dict, genotype_listA, genotype_listB):
-	"""
-	Script for extracting genotype data from genbank metadata.
+	"""Script for extracting genotype data from genbank metadata.
 	
 	If the genotype is found, but the subtype is still 'NaN', populate
 	subtype data based on genotype. 

@@ -19,15 +19,15 @@ begin = 15000
 
 batchsize = min(maxseqs - begin, 100)
 
-GTA_LIST = [r'\bGA\s?[0-9]*\b', r'\bNA\s?[0-9]*\b', r'\bSAA\s?[0-9]*\b', 
+GTA_LIST = [r'\bGA\s?[0-9]*\b', r'\bNA\s?[0-9]*\b', r'\bSAA\s?[0-9]*\b',
 		   r'\bON\s?[0-9]*\b']
 
-GTB_LIST = [r'\bGB\s?[0-9]*\b', r'\bSAB\s?[0-9]*\b', r'\bURU\s?[0-9]*\b', 
+GTB_LIST = [r'\bGB\s?[0-9]*\b', r'\bSAB\s?[0-9]*\b', r'\bURU\s?[0-9]*\b',
 			r'\bBA\s?[0-9]*\b', r'\bBA\s?IV\b', r'\bTHB\b']
 
 
 def getIDs(db, retmax, term):
-	"""Retrieve genbank sequence IDs matching query term. 
+	"""Retrieve genbank sequence IDs matching query term.
 
 	Args:
 		`db` (str)
@@ -63,7 +63,7 @@ def gethandle(db, ids, firstseq, dload_size, rettype, retmode):
 		See `Entrez.efetch` help for help.
 
 	Return:
-		`handle` 
+		`handle`
 			Entrez object containing sequence information
 	"""
 
@@ -103,13 +103,13 @@ def find_subtype(meta_dict):
 
 def find_genotype(meta_dict, genotype_listA, genotype_listB):
 	"""Script for extracting genotype data from genbank metadata.
-	
+
 	If the genotype is found, but the subtype is still 'NaN', populate
-	subtype data based on genotype. 
+	subtype data based on genotype.
 
 
-	Args: 
-		`meta_dict` (dict) 
+	Args:
+		`meta_dict` (dict)
 			dictionary of metadata
 		`genotype_listA` (list)
 			list of possible genotypes for subtype A
@@ -138,12 +138,12 @@ def find_genotype(meta_dict, genotype_listA, genotype_listB):
 						typed_dict['subtype'] = 'B'
 
 	typed_dict['genotype'] = genotype
-	
+
 	return typed_dict
 
 
 def makedf(handle):
-	""" 
+	"""
 	Convert Genbank sequence data into dataframe containing necessary
 	metadata.
 
@@ -175,7 +175,7 @@ def makedf(handle):
 				for feat_qual in feat_dict['GBFeature_quals']:
 					if 'GBQualifier_value' in feat_qual.keys():
 						if re.search(r'\bG\b', feat_qual['GBQualifier_value'])\
-								or re.search(r'\battachment.*protein\b', 
+								or re.search(r'\battachment.*protein\b',
 								             feat_qual['GBQualifier_value']):
 							G_quals = feat_dict['GBFeature_quals']
 							for q in G_quals:
@@ -187,7 +187,7 @@ def makedf(handle):
 		sub_dict = find_genotype(sub_dict, GTA_LIST, GTB_LIST)
 
 		seqinfo.append(sub_dict)
-	
+
 	handle.close()
 
 	seqinfo_df = pd.DataFrame(seqinfo)
@@ -213,12 +213,12 @@ def main():
 		start = start + batchsize
 		if (start-begin) % 500 == 0:
 			print('Processed {0} seqs'.format(start-begin))
-	
+
 	if start != numseqs: #Process final seqs
 		handle = gethandle(database, IDs, start, numseqs, filetype, outmode)
 		metadata_df = makedf(handle)
 		metadata_frames.append(metadata_df)
-	
+
 	full_df = pd.concat(metadata_frames, ignore_index=True, sort=False)
 	assert len(full_df.index) == (numseqs-begin), 'Exported unexpected ' \
 			'number of seqs. Expected: {0} Retrieved: {1}'.format(
@@ -226,9 +226,8 @@ def main():
 	#print(full_df.drop(['db_xref', 'country', 'host'], axis=1))
 	full_df.to_csv(outfile)
 
-if __name__ == '__main__':
-	start_time = time.time()
-	main()
-	end_time = time.time()
-	print('Program took {0:.3f} minutes to run.'.format((end_time - start_time)/60))
-
+# if __name__ == '__main__':
+# 	start_time = time.time()
+# 	main()
+# 	end_time = time.time()
+# 	print('Program took {0:.3f} minutes to run.'.format((end_time - start_time)/60))

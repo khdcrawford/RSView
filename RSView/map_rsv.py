@@ -246,20 +246,3 @@ def main(level, genotype_level, years):
     rsv_df = organize_data(DATAFILES, GENOTYPE_DICT)
     organized_df = count_types(rsv_df, JITTER_DICT, level, genotype_level=genotype_level)
     map_rsv(organized_df, level, genotype_level=genotype_level, years=years)
-
-
-if __name__ == '__main__':
-
-    PARSER = argparse.ArgumentParser(description="Plot global distribution of RSV")
-    PARSER.add_argument(
-        'level', type=str, choices=['subtype', 'genotype'],
-        help="Specify whether the subtype or genotype of RSV sequences should be plotted")
-    PARSER.add_argument(
-        '--genotype-level', type=str, choices=['collapse', 'all'], default='collapse',
-        help="Specify whether to plot all genotypes of RSV or collapse them into major clades")
-    PARSER.add_argument(
-        '--years', default=[1990,2018],
-        help="Specify a range of years to plot")
-    ARGS = PARSER.parse_args()
-
-    main(ARGS.level, genotype_level=ARGS.genotype_level, years=ARGS.years)

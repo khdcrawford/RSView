@@ -26,6 +26,20 @@ GTB_LIST = [r'\bGB\s?[0-9]*\b', r'\bSAB\s?[0-9]*\b', r'\bURU\s?[0-9]*\b',
 
 
 def getIDs(db, retmax, term):
+	"""Retrieve genbank sequence IDs matching query term. 
+
+	Args:
+		`db` (str)
+			string specifying genbank database to search
+		`retmax` (int)
+			maximum number of sequence IDs to return
+		`term` (str)
+			query term
+
+	Returns:
+		`search_IDs` (list)
+			list of sequence IDs returned from the search
+	"""
 	search_handle = Entrez.esearch(db=db, retmax=retmax,
 		term=term)
 	search_record = Entrez.read(search_handle)
@@ -34,11 +48,22 @@ def getIDs(db, retmax, term):
 	return search_IDs
 
 def gethandle(db, ids, firstseq, dload_size, rettype, retmode):
-	"""
-	Download Entrez 'handle' for downloading seqs of interest
+	"""Download Entrez 'handle' for downloading seqs of interest
 
 	Args:
-		required by Entrez
+		`db` (str)
+			Genbank database containing sequences of interest
+		`ids` (list)
+			sequence IDs returned from `getIDs` or other Entrez search
+		`firstseq` (int)
+			index of first sequence to download
+		`dload_size` (int)
+
+		See `Entrez.efetch` help for help.
+
+	Return:
+		`handle` 
+			Entrez object containing sequence information
 	"""
 
 	handle = Entrez.efetch(db=db, id=ids, retstart=firstseq, retmax=dload_size,
@@ -85,13 +110,17 @@ def find_genotype(meta_dict, genotype_listA, genotype_listB):
 
 
 	Args: 
-		meta_dict (dict): dictionary of metadata
-		genotype_listA (list): list of possible genotypes for subtype A
-		genotype_listB (list): list of possible genotypes for subtype B
+		`meta_dict` (dict) 
+			dictionary of metadata
+		`genotype_listA` (list)
+			list of possible genotypes for subtype A
+		`genotype_listB` (list)
+			list of possible genotypes for subtype B
 
 	Returns:
-		typed_dict (dict): dictionary of metadata with genotype (and missing 
-						  subtype) data filled in.
+		`typed_dict` (dict)
+			dictionary of metadata with genotype (and missing subtype) data
+			filled in.
 	"""
 	typed_dict = meta_dict
 	genotype = 'NaN'
@@ -115,6 +144,18 @@ def find_genotype(meta_dict, genotype_listA, genotype_listB):
 
 
 def makedf(handle):
+	""" 
+	Convert Genbank sequence data into dataframe containing necessary
+	metadata.
+
+	Args:
+		`handle`
+			Entrez object containing information downloaded from GenBank
+
+	Returns:
+		`seqinfo_df` (DataFrame)
+			pandas DataFrame containing downloaded sequence and metadata
+	"""
 	records = Entrez.parse(handle)
 	seqinfo = []
 	for record in records:
@@ -156,6 +197,7 @@ def makedf(handle):
 
 
 def main():
+	"""Download sequence data and return dataframe"""
 
 	IDs = getIDs(database, maxseqs, query)
 	numseqs = len(IDs)

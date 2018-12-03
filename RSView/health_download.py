@@ -1,9 +1,17 @@
 import pandas as pd
 import numpy as np
+import country_converter as coco
 
 
 outfile_all = './data/health_data_all.csv'
 outfile_summary = './data/health_data_summary.csv'
+
+def iso3_to_country(iso3):
+    if iso3 == 'Global':
+        return 'Global'
+    else:
+        country =  coco.convert(names=iso3, to='name_short')
+        return country
 
 def main():
 
@@ -47,6 +55,9 @@ def main():
 	# create summary dataframe to groupby iso3 and calculate the mean 
 	# note: maybe change to median??
 	df_summary = df_clean.groupby(df_clean.index).mean().reset_index()
+
+	df_summary["country_short"] = [iso3_to_country(x) for x in df_summary.iso3.values]
+	df_clean["country_short"] = [iso3_to_country(x) for x in df_clean.iso3.values]
 
 	# export full and summary dataframes to csv
 	df_clean.to_csv(outfile_all)

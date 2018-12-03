@@ -1,6 +1,6 @@
 import unittest
 import os
-from . import map_rsv
+import map_rsv
 
 class TestMapRsv(unittest.TestCase):
     """

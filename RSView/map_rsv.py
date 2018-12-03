@@ -1,17 +1,19 @@
 """ Map the global distribution of Respiratory Syncytial Virus (RSV) by collection date, location,
 and viral subtype or genotype """
 
-import argparse
+import os
+import glob
 import pandas as pd
 import numpy as np
 import plotly.plotly as py
 import matplotlib.pyplot as plt
 from matplotlib import colors
 
+from map_argparser import get_arguments
+
 
 JITTER_DICT = {'A':1.0, 'B':-1.0}
-DATAFILES = ['./data/RSVG_gb_metadata_0-5000.csv', './data/RSVG_gb_metadata_5000-10000.csv',
-             './data/RSVG_gb_metadata_10000-15000.csv', './data/RSVG_gb_metadata_15000+.csv']
+DATAFILES = [filename for filename in glob.glob('./data/RSVG_gb_metadata*.csv')]
 GENOTYPE_DICT = {'GA2':'GA', 'GA5':'GA', 'GB12':'GB', 'GB13':'GB', 'GA3':'GA', 'NA1':'NA',
                  'NA2':'NA', 'ON1':'ON', 'SAA1':'SAA', 'BA':'BA', 'BA10':'BA', 'BA9':'BA',
                  'GB3':'GB', 'SAB1':'SAB', 'SAB3':'SAB', 'SAB4':'SAB', 'NA3':'NA', 'GB2':'GB',
@@ -29,6 +31,12 @@ def organize_data(datafiles, genotype_dict):
     """
 
     rsv_df = pd.DataFrame()
+
+    for filename in datafiles:
+        if os.path.isfile(filename):
+            pass
+        else:
+            raise Error('Sequence data has not been downloaded yet. Run seq_download.py')
 
     for datafile in datafiles:
         temp_df = pd.read_csv(datafile, usecols=['collection_date', 'country', 'subtype',
@@ -249,15 +257,6 @@ def main(level, genotype_level, years):
 
 if __name__ == "__main__":
 
-    PARSER.add_argument(
-        'level', type=str, choices=['subtype', 'genotype'],
-        help="Specify whether the subtype or genotype of RSV sequences should be plotted")
-    PARSER.add_argument(
-        '--genotype-level', type=str, choices=['collapse', 'all'], default='collapse',
-        help="Specify whether to plot all genotypes of RSV or collapse them into major clades")
-    PARSER.add_argument(
-        '--years', default=[1990,2018],
-        help="Specify a range of years to plot")
-    ARGS = PARSER.parse_args()
+    args = get_arguments()
 
-    main(ARGS.level, genotype_level=ARGS.genotype_level, years=ARGS.years)
+    main(args.level, genotype_level=args.genotype_level, years=args.years)

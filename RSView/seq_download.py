@@ -2,7 +2,7 @@ from Bio import Entrez
 import pandas as pd
 import time
 import re
-import argparse
+import RSView.parsearguments
 
 #Write argparser
 
@@ -197,6 +197,12 @@ def makedf(handle):
 
 def main():
 	"""Download sequence data and return dataframe"""
+
+	parser = RSView.parsearguments.seqParser()
+	args = vars(parser.parse_args())
+	prog = parser.prog
+
+	print(args)
 
 	IDs = getIDs(database, maxseqs, query)
 	numseqs = len(IDs)

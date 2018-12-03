@@ -1,6 +1,0 @@
-#!python
-
-"""Script for downloading RSV G sequences and metadata from Genbank"""
-
-import RSView.seqdownload.py
-

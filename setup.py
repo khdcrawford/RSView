@@ -37,14 +37,18 @@ setup(
     version = metadata['version'],
     author = metadata['author'],
     url = metadata['url'],
-    # assumes appropriate tagged version is on GitHub
     description = 'Mapping of RSV sequences based on Genbank submissions.' \
                   'Correlation of genotypes with childhood pneumonia deaths.',
     long_description = readme,
     license = 'MIT License',
-    environment = './RSView/environment.yml',
-    #packages=find_packages(exclude=['docs', 'tests']),
+    install_requires = [
+        'biopython>=1.72',
+        'plotly>=3.4',
+        'pandas>=0.23'],
     packages=['RSView'],
-    package_dir = {'RSView'},
-    scripts = ['RSView']
+    package_dir = {'viralseq_mapping':'RSView'},
+    scripts = ['RSView/RSView_getseqs',
+               'RSView/RSView_map.py',
+               'RSView/RSView_plot' 
+                ]
 )

@@ -226,8 +226,8 @@ def main():
 	#print(full_df.drop(['db_xref', 'country', 'host'], axis=1))
 	full_df.to_csv(outfile)
 
-# if __name__ == '__main__':
-# 	start_time = time.time()
-# 	main()
-# 	end_time = time.time()
-# 	print('Program took {0:.3f} minutes to run.'.format((end_time - start_time)/60))
+if __name__ == '__main__':
+	start_time = time.time()
+	main()
+	end_time = time.time()
+	print('Program took {0:.3f} minutes to run.'.format((end_time - start_time)/60))

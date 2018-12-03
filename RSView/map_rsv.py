@@ -153,8 +153,8 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
         type_list = a_genotypes + b_genotypes
 
         cmap = {}
-        blues = plt.get_cmap('Blues')
-        reds = plt.get_cmap('Reds')
+        blues = plt.get_cmap('GnBu')
+        reds = plt.get_cmap('OrRd')
 
         for a_genotype in a_genotypes:
             cmap[a_genotype] = colors.to_hex(
@@ -181,7 +181,7 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
                 sizemin=5,
                 color=cmap[organized_df.loc[i, level]],
                 line=dict(width=0.5, color='rgb(40,40,40)'),
-                opacity=0.5,
+                opacity=0.75,
                 sizemode='diameter'),
             hovertext=(organized_df.loc[i, 'country'] + ', ' + str(level) + ' ' +
                        organized_df.loc[i, level] + ' : ' + str(organized_df.loc[i, 'count'])+
@@ -246,3 +246,18 @@ def main(level, genotype_level, years):
     rsv_df = organize_data(DATAFILES, GENOTYPE_DICT)
     organized_df = count_types(rsv_df, JITTER_DICT, level, genotype_level=genotype_level)
     map_rsv(organized_df, level, genotype_level=genotype_level, years=years)
+
+if __name__ == "__main__":
+
+    PARSER.add_argument(
+        'level', type=str, choices=['subtype', 'genotype'],
+        help="Specify whether the subtype or genotype of RSV sequences should be plotted")
+    PARSER.add_argument(
+        '--genotype-level', type=str, choices=['collapse', 'all'], default='collapse',
+        help="Specify whether to plot all genotypes of RSV or collapse them into major clades")
+    PARSER.add_argument(
+        '--years', default=[1990,2018],
+        help="Specify a range of years to plot")
+    ARGS = PARSER.parse_args()
+
+    main(ARGS.level, genotype_level=ARGS.genotype_level, years=ARGS.years)

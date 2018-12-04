@@ -54,6 +54,8 @@ RSV subtypes and childhood deaths, and other analyses.
 
 Using map_rsv.py, the user can generate a world map highlighting which genotypes and subtypes were found in different countries and their prevalence, as shown by larger circles to represent where more sequences have been recorded. Using the optional 'years' argument or the slider found below the map, the user can highlight which genotypes or subtypes were more prevalent in a given time period or follow their shift in frequency and location over time.
 
+![alt text](../examples/maprsv_2011.png)
+
 ### Use Case 2: Analyze health impact of acute respiratory infections around the world
 
 Using plot_rsv.py, the user can plot different metrics measuring the differential health impact of acute respiratory infections on children around the world. If they are interested in seeing how a particular country compares to the other countries in this dataset, they can use the optional 'highlight_country' to highlight their country of interest on the graph.

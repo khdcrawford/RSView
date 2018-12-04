@@ -49,4 +49,12 @@ RSV subtypes and childhood deaths, and other analyses.
 
 ## Use Cases
 
-### Use Case 1:  
+### Use Case 1: Analyze global distribution of RSV genotypes or subtypes
+
+Using map_rsv.py, the user can generate a world map highlighting which genotypes and subtypes were found in different countries and their prevalence, as shown by larger circles to represent where more sequences have been recorded. Using the optional 'years' argument or the slider found below the map, the user can highlight which genotypes or subtypes were more prevalent in a given time period or follow their shift in frequency and location over time.
+
+### Use Case 2: Analyze health impact of acute respiratory infections around the world
+
+### Use Case 3: Analyze health impact trends in a specific country over time
+
+

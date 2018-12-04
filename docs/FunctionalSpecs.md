@@ -19,6 +19,7 @@ Metadata that associated with these sequences is used to locate the virus tempor
 childhood deaths due to pneumonia is taken from [UNICEF](https://data.unicef.org/topic/child-health/pneumonia/). This
 data is available in tabular format.
 
+
 ## User Profile 
 
 ### Target user description
@@ -55,6 +56,8 @@ Using map_rsv.py, the user can generate a world map highlighting which genotypes
 
 ### Use Case 2: Analyze health impact of acute respiratory infections around the world
 
+Using plot_rsv.py, the user can plot different metrics measuring the differential health impact of acute respiratory infections on children around the world. If they are interested in seeing how a particular country compares to the other countries in this dataset, they can use the optional 'highlight_country' to highlight their country of interest on the graph.
+
 ### Use Case 3: Analyze health impact trends in a specific country over time
 
-
+If the user would like to examine health trends in their country of interest more specifically, plot_rsv.py can also be used to plot the trend in health metrics for that country from 2000-2016.

@@ -10,15 +10,6 @@ Furthermore, it is known that for some respiratory viruses, such as rhinovirus, 
 
 Together our project, `RSView`, will provide an important resource for better understanding the global circulation dynamics of RSV and investigating the effects of genotype on disease severity. We recognize that this is very much a "first-pass" analysis, but believe these analyses and, especially, this framework for examining RSV (which is modeled off of the nextstrain.org platform developed by Trevor Bedford and Richard Neher) could prove quite useful for the field.
 
-### User Profile
-
-RSView is an analysis of the global distribution of RSV subtypes intended for laboratory scientists and clinicians. In
-order to access the RSView, users will navigate to the Github repository where it is stored
-(https://github.com/khdusenbury/viralseq_mapping). Though some of the intended users will have a programming background,
-this is not necessary in order for the user to understand or interact with the analysis. Users that are fluent in Python
-will be able to view the code used to generate the interactive subtype distribution map, plots of correlations between
-RSV subtypes and childhood deaths, and other analyses.
-
 ### Data Sources
 
 RSView utilizes publicly available viral sequence data and metadata from
@@ -28,7 +19,9 @@ Metadata that associated with these sequences is used to locate the virus tempor
 childhood deaths due to pneumonia is taken from [UNICEF](https://data.unicef.org/topic/child-health/pneumonia/). This
 data is available in tabular format.
 
-### Use Cases
+## User Profile 
+
+### Target user description
 
 RSView is intended to be used by clinicians and laboratory scientists.
 
@@ -43,4 +36,17 @@ Laboratory scientists studying RSV or similar viruses may be interested in RSVie
 viral diversity is distributed globally and how it fluctuates over time. Scientists studying RSV may primarily use
 RSView's interactive map as a preliminary tool for understanding and visualizing evolution of RSV. Scientists studying
 related viruses may be interested in adapting RSView to visualize the global and temporal distribution of their virus of
-interest.     
+interest. 
+
+### Required programming background of users
+
+RSView is an analysis of the global distribution of RSV subtypes intended for laboratory scientists and clinicians. In
+order to access the RSView, users will navigate to the Github repository where it is stored
+(https://github.com/khdusenbury/viralseq_mapping). Though some of the intended users will have a programming background,
+this is not necessary in order for the user to understand or interact with the analysis. Users that are fluent in Python
+will be able to view the code used to generate the interactive subtype distribution map, plots of correlations between
+RSV subtypes and childhood deaths, and other analyses. 
+
+## Use Cases
+
+### Use Case 1:  

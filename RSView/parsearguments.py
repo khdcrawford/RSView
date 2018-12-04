@@ -17,16 +17,19 @@ class ArgumentParserNoArgHelp(argparse.ArgumentParser):
 
 def mapParser():
     """Returns argument parser for `map_rsv.py`"""
-    parser = argparse.ArgumentParser(description="Plot global distribution of RSV")
+    parser = argparse.ArgumentParser(description="Plot global distribution "\
+            "of RSV")
     parser.add_argument(
-        'level', type=str, choices=['subtype', 'genotype'],
-        help="Specify whether the subtype or genotype of RSV sequences should be plotted")
+            'level', type=str, choices=['subtype', 'genotype'],
+            help="Specify whether the subtype or genotype of RSV sequences "\
+            "should be plotted")
     parser.add_argument(
-        '--genotype-level', type=str, choices=['collapse', 'all'], default='collapse',
-        help="Specify whether to plot all genotypes of RSV or collapse them into major clades")
+            '--genotype-level', type=str, choices=['collapse', 'all'], 
+            default='collapse', help="Specify whether to plot all genotypes of "\
+            "RSV or collapse them into major clades")
     parser.add_argument(
-        '--years', default=[1990,2018],
-        help="Specify a range of years to plot")
+            '--years', default=[1990,2018],
+            help="Specify a range of years to plot")
     return parser
 
 def seqParser():
@@ -67,13 +70,18 @@ def seqParser():
     return parser
 
 def plotParser(allowedData=""):
-    parser = argparse.ArgumentParser(description="Plot data on child death rates from acute respiratory infection", formatter_class=RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(description="Plot data on child death "\
+            "rates from acute respiratory infection", 
+            formatter_class=RawTextHelpFormatter)
     parser.add_argument(
-        'level', type=str, choices=['all', 'country'], default='all',
-        help="Specify whether to plot data for all countries or for a specific country")
+            'level', type=str, choices=['all', 'country'], default='all',
+            help="Specify whether to plot data for all countries or for a "\
+            "specific country")
     parser.add_argument(
-        'data_type', type=str, choices=[' nnd ', ' pnd ', ' neo9 ', ' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ', 'fneo9', 'fpost9', 'fufive9'],
-        help="Specify which category of data to plot:\n" + allowedData)
+            'data_type', type=str, choices=[' nnd ', ' pnd ', ' neo9 ',
+            ' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ', 
+            'fneo9', 'fpost9', 'fufive9'], help="Specify which category of "\
+            "data to plot:\n" + allowedData)
     parser.add_argument(
         '--country', type=str, default='Global',
         help="Specify the country for which to plot data",

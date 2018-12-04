@@ -3,6 +3,7 @@ import pandas as pd
 import time
 import re
 import os
+import math
 import RSView.parsearguments
 
 #Write argparser
@@ -220,9 +221,10 @@ def main():
 
 	while begin < maxseqs:
 		end = begin + filesize
-		outfile = '{0}/{1}_{2}-{3}.csv'.format(args['outdir'], args['outprefix'],
-				   begin, end)
-		
+		outfile = '{0}/{1}_{2}-{3}.csv'.format(args['outdir'], 
+				  args['outprefix'], begin, end)
+		print('Downloading seq file number {0}.'.format(int(
+				math.ceil(end/filesize))))
 		print('Saving sequences and metadata to: {0}'.format(outfile))
 
 		IDs = getIDs(database, end, query)

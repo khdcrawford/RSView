@@ -58,6 +58,8 @@ Using map_rsv.py, the user can generate a world map highlighting which genotypes
 
 Using plot_rsv.py, the user can plot different metrics measuring the differential health impact of acute respiratory infections on children around the world. If they are interested in seeing how a particular country compares to the other countries in this dataset, they can use the optional 'highlight_country' to highlight their country of interest on the graph.
 
+![alt text](../examples/rsvplot_highlight.png)
+
 ### Use Case 3: Analyze health impact trends in a specific country over time
 
 If the user would like to examine health trends in their country of interest more specifically, plot_rsv.py can also be used to plot the trend in health metrics for that country from 2000-2016.

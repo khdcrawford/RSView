@@ -2,11 +2,11 @@ from Bio import Entrez
 import pandas as pd
 import time
 import re
+import os
 import RSView.parsearguments
 
 #Write argparser
 
-Entrez.email = "dusenk@uw.edu"
 
 outfile = './data/RSVG_gb_metadata_15000+.csv'
 
@@ -202,7 +202,23 @@ def main():
 	args = vars(parser.parse_args())
 	prog = parser.prog
 
-	print(args)
+	Entrez.email = args['email']
+	query = args['query']
+	begin = args['firstseq']
+	filesize = args['filesize']
+	maxseqs = args['maxseqs']
+	database = args['db']
+	filetype=args['filetype']
+	outmode=args['outmode']
+	batchsize = min(filesize - begin, args['batchsize'])
+
+	if not os.path.isdir(args['outdir']):
+		os.makedirs(args['outdir'])
+
+	outfile = '{0}/{1}_{2}-{3}.csv'.format(args['outdir'], args['outprefix'],
+			   begin, maxseqs)
+	
+	print(outfile)
 
 	IDs = getIDs(database, maxseqs, query)
 	numseqs = len(IDs)

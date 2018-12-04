@@ -81,13 +81,13 @@ def find_subtype(meta_dict):
 		subtype (str): RSV subtype as one letter string, 'A' or 'B'.
 	"""
 
-	subtype = 'NaN'
+	subtype = ''
 	if ' A' in meta_dict['organism']:
 		subtype = 'A'
 	elif ' B' in meta_dict['organism']:
 		subtype = 'B'
 
-	elif subtype == 'NaN':
+	elif subtype == '':
 		for val in meta_dict.values():
 			if re.search(r'RSV\s?A\b', val) or \
 					re.search(r'type: A\b', val) or	\
@@ -104,7 +104,7 @@ def find_subtype(meta_dict):
 def find_genotype(meta_dict, genotype_listA, genotype_listB):
 	"""Script for extracting genotype data from genbank metadata.
 
-	If the genotype is found, but the subtype is still 'NaN', populate
+	If the genotype is found, but the subtype is still empty, populate
 	subtype data based on genotype.
 
 
@@ -122,19 +122,19 @@ def find_genotype(meta_dict, genotype_listA, genotype_listB):
 			filled in.
 	"""
 	typed_dict = meta_dict
-	genotype = 'NaN'
+	genotype = ''
 	for value in meta_dict.values():
 		if 'genotype:' in value:
 			for gt in genotype_listA:
 				if re.search(gt, value):
 					genotype = re.findall(gt, value)[0]
-					if meta_dict['subtype'] == 'NaN':
+					if meta_dict['subtype'] == '':
 						typed_dict['subtype'] = 'A'
 
 			for gt in genotype_listB:
 				if re.search(gt, value):
 					genotype = re.findall(gt, value)[0]
-					if meta_dict['subtype'] == 'NaN':
+					if meta_dict['subtype'] == '':
 						typed_dict['subtype'] = 'B'
 
 	typed_dict['genotype'] = genotype
@@ -215,38 +215,45 @@ def main():
 	if not os.path.isdir(args['outdir']):
 		os.makedirs(args['outdir'])
 
-	outfile = '{0}/{1}_{2}-{3}.csv'.format(args['outdir'], args['outprefix'],
-			   begin, maxseqs)
-	
-	print(outfile)
+	if not os.path.isdir('{0}'.format(args['outdir'])):
+		os.makedirs('{0}'.format(args['outdir']))
 
-	IDs = getIDs(database, maxseqs, query)
-	numseqs = len(IDs)
-	print('Search returned {0} hits.'.format(numseqs))
+	while begin < maxseqs:
+		end = begin + filesize
+		outfile = '{0}/{1}_{2}-{3}.csv'.format(args['outdir'], args['outprefix'],
+				   begin, end)
+		
+		print('Saving sequences and metadata to: {0}'.format(outfile))
 
-	start = begin
-	print('Downloading metadata for seqs: {0} to {1}'.format(start, numseqs))
+		IDs = getIDs(database, end, query)
+		numseqs = len(IDs)
+		print('Search returned {0} hits.'.format(numseqs))
 
-	metadata_frames = []
-	while start <= (numseqs - batchsize):
-		handle = gethandle(database, IDs, start, batchsize, filetype, outmode)
-		metadata_df = makedf(handle)
-		metadata_frames.append(metadata_df)
-		start = start + batchsize
-		if (start-begin) % 500 == 0:
-			print('Processed {0} seqs'.format(start-begin))
+		start = begin
+		print('Downloading metadata for seqs: {0} to {1}'.format(start, numseqs))
 
-	if start != numseqs: #Process final seqs
-		handle = gethandle(database, IDs, start, numseqs, filetype, outmode)
-		metadata_df = makedf(handle)
-		metadata_frames.append(metadata_df)
+		metadata_frames = []
+		while start <= (numseqs - batchsize):
+			handle = gethandle(database, IDs, start, batchsize, filetype, outmode)
+			metadata_df = makedf(handle)
+			metadata_frames.append(metadata_df)
+			start = start + batchsize
+			if (start-begin) % 500 == 0:
+				print('Processed {0} seqs'.format(start-begin))
 
-	full_df = pd.concat(metadata_frames, ignore_index=True, sort=False)
-	assert len(full_df.index) == (numseqs-begin), 'Exported unexpected ' \
-			'number of seqs. Expected: {0} Retrieved: {1}'.format(
-			(numseqs-begin), len(full_df.index))
-	#print(full_df.drop(['db_xref', 'country', 'host'], axis=1))
-	full_df.to_csv(outfile)
+		if start != numseqs: #Process final seqs
+			handle = gethandle(database, IDs, start, numseqs, filetype, outmode)
+			metadata_df = makedf(handle)
+			metadata_frames.append(metadata_df)
+
+		full_df = pd.concat(metadata_frames, ignore_index=True, sort=False)
+		assert len(full_df.index) == (numseqs-begin), 'Exported unexpected ' \
+				'number of seqs. Expected: {0} Retrieved: {1}'.format(
+				(numseqs-begin), len(full_df.index))
+		#print(full_df.drop(['db_xref', 'country', 'host'], axis=1))
+		full_df.to_csv(outfile)
+
+		begin = end
 
 if __name__ == '__main__':
 	start_time = time.time()

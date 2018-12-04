@@ -2,8 +2,9 @@
 
 import sys
 import argparse
-import RSView
+#import RSView
 
+from argparse import RawTextHelpFormatter
 
 class ArgumentParserNoArgHelp(argparse.ArgumentParser):
     """Like *argparse.ArgumentParser*, but prints help when no arguments."""
@@ -48,5 +49,21 @@ def seqParser():
     parser.add_argument('--query', required=True, type=str, help='')
     return parser
 
-#def plotParser():
+def plotParser(allowedData=""):
+    parser = argparse.ArgumentParser(description="Plot data on child death rates from acute respiratory infection", formatter_class=RawTextHelpFormatter)
+    parser.add_argument(
+        'level', type=str, choices=['all', 'country'], default='all',
+        help="Specify whether to plot data for all countries or for a specific country")
+    parser.add_argument(
+        'data_type', type=str, choices=[' nnd ', ' pnd ', ' neo9 ', ' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ', 'fneo9', 'fpost9', 'fufive9'],
+        help="Specify which category of data to plot:\n" + allowedData)
+    parser.add_argument(
+        '--country', type=str, default='Global',
+        help="Specify the country for which to plot data",
+        #required='level' in sys.argv and sys.args.level == "country"
+        )
+    parser.add_argument(
+        '--highlight_country', type=str, default=None,
+        help="Specify the country for to highlight")
+    return parser
 

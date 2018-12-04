@@ -5,12 +5,21 @@ import country_converter as coco
 import plotly 
 import plotly.plotly as py
 import plotly.graph_objs as go
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+
+from parsearguments import plotParser
 
 
 plotly.tools.set_credentials_file(username='jillianeb', api_key='eOsTljd6vVMiyuy4Msy0')
 plotly.tools.set_config_file(world_readable=False,
 							 sharing='private')
 
+def dictToHelp(dict):
+	output = ""
+	for item in dict:
+		output = output + " " + item + ": "
+		output = output + dict[item] + "\n"
+	return output
 
 df_health_all = pd.read_csv('./data/health_data_all.csv')
 df_health_summary = pd.read_csv('./data/health_data_summary.csv')
@@ -48,24 +57,24 @@ def is_country_present(country):
 
 
 
-def plot_summary(column, country=None):
+def plot_summary(data_type, highlight_country=None):
 	##
 	# default: plot 
 	
 	COLOR_HIGHLIGHT = COLOR_DICT.copy()
 	
-	df_sorted = df_health_summary.sort_values(column)
+	df_sorted = df_health_summary.sort_values(data_type)
 	df_sorted = df_sorted.reset_index(drop=True)
 
-	if country != None:
-		country_short = input_to_country(country)
+	if highlight_country != None:
+		country_short = input_to_country(highlight_country)
 		highlight_index = df_sorted.index[df_sorted['country_short'] == country_short].values[0]
 		#highlight_index = 186
 		COLOR_HIGHLIGHT[highlight_index] = 'rgba(222,45,38,0.8)'
 
 	trace1 = go.Bar(
 		x= df_sorted['country_short'],
-		y=df_sorted[column],
+		y=df_sorted[data_type],
 		name='neo9',
 		marker=dict(
 			color=COLOR_HIGHLIGHT
@@ -74,7 +83,7 @@ def plot_summary(column, country=None):
 
 	data = [trace1]
 	layout = go.Layout(
-		title = DATA_DICT[column] + '<br> Averaged from 2000-2016',
+		title = DATA_DICT[data_type] + '<br> Averaged from 2000-2016',
 		yaxis=dict(
 			#title='Percent',
 			titlefont=dict(
@@ -90,10 +99,14 @@ def plot_summary(column, country=None):
 
 	fig = go.Figure(data=data, layout=layout)
 
-	return py.iplot(fig, filename='stacked-bar', world_readable=True)
+	plot(fig)
+
+	#return py.iplot(fig, filename='stacked-bar', world_readable=True)
+	#return plot(fig, filename='stacked-bar', world_readable=True)
 
 
-def plot_country(column, country):
+
+def plot_country(data_type, country='Global'):
 	
 	country_short = input_to_country(country)
 
@@ -101,8 +114,8 @@ def plot_country(column, country):
 
 	trace1 = go.Bar(
 		x= df_country1['year'],
-		y=df_country1[column],
-		name=DATA_DICT[column] + ' in ' + country,
+		y=df_country1[data_type],
+		name=DATA_DICT[data_type] + ' in ' + country,
 		marker=dict(
 			color=COLOR_DICT
 			),
@@ -110,7 +123,7 @@ def plot_country(column, country):
 
 	data = [trace1]
 	layout = go.Layout(
-		title = DATA_DICT[column] + ' in ' + country,
+		title = DATA_DICT[data_type] + ' in ' + country,
 		yaxis=dict(
 			#title='Averaged from 2000-2016',
 		),
@@ -119,5 +132,27 @@ def plot_country(column, country):
 
 	fig = go.Figure(data=data, layout=layout)
 	
-	return py.iplot(fig, filename='stacked-bar', world_readable=True)
+	plot(fig)
+
+	#return py.iplot(fig, filename='stacked-bar', world_readable=True)
+
+
+def main(level, data_type, country='Global', highlight_country=None):
+
+	if level != 'country':
+		return plot_summary(data_type, highlight_country)
+	else:
+		return plot_country(data_type, country)
+
+if __name__ == "__main__":
+
+    args = plotParser(dictToHelp(DATA_DICT)).parse_args()
+
+    main(args.level, data_type=args.data_type, country=args.country, highlight_country=args.highlight_country)
+
+
+
+
+
+
 

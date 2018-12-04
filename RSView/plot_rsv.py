@@ -40,7 +40,7 @@ DATA_DICT = {
 		'fufive9':'Percent Underfive deaths due to Acute Respiratory Infection'}
 
 def input_to_country(country_input):
-	if country_input == 'Global':
+	if country_input == 'Global' or 'global':
 		return 'Global'
 	else:
 		country =  coco.convert(names=country_input, to='name_short')

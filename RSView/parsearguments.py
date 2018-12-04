@@ -16,6 +16,7 @@ class ArgumentParserNoArgHelp(argparse.ArgumentParser):
 
 
 def mapParser():
+    """Returns argument parser for `map_rsv.py`"""
     parser = argparse.ArgumentParser(description="Plot global distribution of RSV")
     parser.add_argument(
         'level', type=str, choices=['subtype', 'genotype'],
@@ -37,16 +38,32 @@ def seqParser():
                     RSView.__author__) + 'For documentation, see '
                     '{0}'.format(RSView.__url__), 
                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--email', required=True, type=str, help='User email for '\
-            'GenBank download.')
-    parser.add_argument('--outprefix', default='./data/RSVgb_metadata_', 
-            type=string, help='Path and beginning of file name for output '\
-            '`.csv`. Suffix will specify number of seqs downloaded.')
+    parser.add_argument('--email', required=True, type=str, help='User email'\
+            ' for GenBank download.')
+    parser.add_argument('--query', required=True, type=str, help='Search '\
+            'term(s) for downloading sequences from GenBank.')
+    parser.add_argument('--outdir', default='./data', type=str,
+            help='Directory for downloaded data.')
+    parser.add_argument('--outprefix', default='RSVgb_metadata', type=str, 
+            help='Beginning of file name for output `.csv`. Suffix will '\
+            'specify number of sequences downloaded.')
     parser.add_argument('--db', default='nuccore', type=str, help='Entrez'\
             ' database to search.')
-    parser.add_argument('--retnum', default=5000, type=int, help='')
-    parser.add_argument('--batchsize', )
-    parser.add_argument('--query', required=True, type=str, help='')
+    parser.add_argument('--firstseq', default=0, type=int, help='Index of '\
+            'first sequence to download.')
+    parser.add_argument('--filesize', default=5000, type=int, help='Number of '\
+            'seqs to download into one file. Default of 5000 balances '\
+            'download time and minimizing the number of separate files.')
+    parser.add_argument('--maxseqs', default=20000, type=int, help='Maximum '\
+            'number of sequences to download across all output files.')
+    parser.add_argument('--batchsize', default=100, type=int, help='Number '\
+            'seqs to download in one retrieval. If much larger than 100, '\
+            'download will be quite slow.')
+    parser.add_argument('--filetype', default='gb', type=str, help='File '\
+            'type of sequences downloaded from GenBank.')
+    parser.add_argument('--outmode', default='xml', type=str, help='File '\
+            'type for results of GenBank query.')
+
     return parser
 
 def plotParser(allowedData=""):

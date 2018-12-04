@@ -2,7 +2,7 @@
 
 import sys
 import argparse
-#import RSView
+import RSView
 
 from argparse import RawTextHelpFormatter
 

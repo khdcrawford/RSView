@@ -1,5 +1,7 @@
 import unittest
 import os
+from unittest.mock import patch
+
 import RSView.map_rsv as map_rsv
 
 class TestMapRsv(unittest.TestCase):
@@ -29,47 +31,72 @@ class TestMapRsv(unittest.TestCase):
 
     def test_count_types(self):
         #Test level='subtype'
-        organized_df_subtype = self.run_count_types('subtype')
+        organized_df = self.run_count_types('subtype')
 
-        self.assertEqual(list(organized_df_subtype.columns), ['country', 'subtype', 'year', 'count',
+        self.assertEqual(list(organized_df.columns), ['country', 'subtype', 'year', 'count',
                          'country_code', 'Longitude', 'Latitude', 'adj_lon', 'adj_lat'])
-        self.assertTrue(len(organized_df_subtype[col].notnull()) == len(organized_df_subtype) for
-                        col in organized_df_subtype.columns)
+        self.assertTrue(len(organized_df[col].notnull()) == len(organized_df) for
+                        col in organized_df.columns)
 
         #Test level='genotype'
-        organized_df_genotype = self.run_count_types('genotype')
+        organized_df = self.run_count_types('genotype')
 
-        self.assertEqual(list(organized_df_genotype.columns), ['country', 'subtype',
+        self.assertEqual(list(organized_df.columns), ['country', 'subtype',
                          'genotype_group', 'year', 'count', 'country_code', 'Longitude',
                          'Latitude', 'adj_lon', 'adj_lat'])
-        self.assertTrue(len(organized_df_genotype[col].notnull()) == len(organized_df_genotype) for
-                        col in organized_df_genotype.columns)
+        self.assertTrue(len(organized_df[col].notnull()) == len(organized_df) for
+                        col in organized_df.columns)
 
         #Test level='genotype', genotype_level='all'
-        organized_df_genotypegroup = self.run_count_types('genotype', genotype_level='all')
+        organized_df = self.run_count_types('genotype', genotype_level='all')
 
-        self.assertEqual(list(organized_df_genotypegroup.columns), ['country', 'subtype',
+        self.assertEqual(list(organized_df.columns), ['country', 'subtype',
                          'genotype', 'year', 'count', 'country_code', 'Longitude',
                          'Latitude', 'adj_lon', 'adj_lat'])
-        self.assertTrue(len(organized_df_genotypegroup[col].notnull()) ==
-                        len(organized_df_genotypegroup) for col in
-                        organized_df_genotypegroup.columns)
+        self.assertTrue(len(organized_df[col].notnull()) ==
+                        len(organized_df) for col in organized_df.columns)
 
-    def test_map_rsv(self):
+    #Don't actually produce plot, just test function components
+    @patch("RSView.map_rsv.py.plot")
+    def test_map_rsv(self, mock_show):
         #Test level='subtype'
-        self.run_map_rsv('subtype')
+        fig = self.run_map_rsv('subtype')
+
+        self.assertEqual(len(fig['data']), len(self.run_count_types('subtype'))+2)
+        self.assertEqual(len(fig['layout']['sliders'][0]['steps']), int(2018-1980))
+        self.assertTrue('subtype' in fig['data'][0]['hovertext'])
 
         #Test level='subtype', years = 'all'
-        self.run_map_rsv('subtype', years='all')
+        fig = self.run_map_rsv('subtype', years='all')
+        year_range = [yr for yr in range(int(self.run_count_types('subtype').year.min()),
+                      int(self.run_count_types('subtype').year.max()))]
+
+        self.assertEqual(len(fig['layout']['sliders'][0]['steps']), len(year_range))
 
         #Test level='genotype'
-        self.run_map_rsv('genotype')
+        fig = self.run_map_rsv('genotype')
+        organized_df = self.run_count_types('genotype')
+        a_groups = list(set(organized_df[organized_df['subtype'] == 'A']
+                               ['genotype_group'].tolist()))
+        b_groups = list(set(organized_df[organized_df['subtype'] == 'B']
+                               ['genotype_group'].tolist()))
+
+        self.assertEqual(len(fig['data']), len(organized_df) +
+                         len(a_groups+b_groups))
+        self.assertTrue('genotype_group' in fig['data'][0]['hovertext'])
 
         #Test level='genotype', genotype_level='all'
-        self.run_map_rsv('genotype', genotype_level='all')
+        fig = self.run_map_rsv('genotype', genotype_level='all')
+        organized_df = self.run_count_types('genotype', genotype_level='all')
+        a_genotypes = list(set(organized_df[organized_df['subtype'] == 'A']
+                               ['genotype'].tolist()))
+        b_genotypes = list(set(organized_df[organized_df['subtype'] == 'B']
+                               ['genotype'].tolist()))
 
-        #Test level='genotype', genotype_level='all', years='all'
-        self.run_map_rsv('genotype', genotype_level='all', years='all')
+        self.assertEqual(len(fig['data']), len(organized_df) +
+                         len(a_genotypes+b_genotypes))
+        self.assertTrue('genotype' in fig['data'][0]['hovertext'])
+
 
 if __name__ == '__main__':
     unittest.main()

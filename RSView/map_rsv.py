@@ -136,7 +136,7 @@ def count_types(rsv_df, jitter_dict, level, genotype_level='collapse'):
     return organized_df
 
 
-def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
+def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2018]):
     """
     Use ploy.ly to map RSV sequences onto a global map, with bubbles indicating the virus
     collection location. Bubbles are colored according to subtype or genotype (indicated by the
@@ -152,9 +152,14 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
     else:
         year_range = [yr for yr in range(years[0],years[1]+1)]
 
+    #Set color scales: blues for 'A' viruses, reds for 'B'
+    blues = plt.get_cmap('GnBu')
+    reds = plt.get_cmap('OrRd')
+
     if level == 'subtype':
         type_list = ['A', 'B']
-        cmap = {'A':'royalblue', 'B':'salmon'}
+        cmap = {'A': colors.to_hex(blues(0.75)),
+                'B': colors.to_hex(reds(0.75))}
 
     elif level == 'genotype':
         #genotype_level can be specified by an optional argument
@@ -171,9 +176,6 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
         type_list = a_genotypes + b_genotypes
 
         cmap = {}
-        blues = plt.get_cmap('GnBu')
-        reds = plt.get_cmap('OrRd')
-
         for a_genotype in a_genotypes:
             cmap[a_genotype] = colors.to_hex(
                 blues((a_genotypes.index(a_genotype)+1.0)/len(a_genotypes)))
@@ -254,11 +256,12 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
             landcolor='rgb(217, 217, 217)',
             countrywidth=1,
             ),
-        legend=dict(x=1.02, y=0.5))
+        legend=dict(x=1.02, y=0.75))
 
     fig = dict(data=map_list, layout=layout)
-    py.plot(fig)
 
+    py.plot(fig)
+    return fig
 
 def main(level, genotype_level, years):
     """

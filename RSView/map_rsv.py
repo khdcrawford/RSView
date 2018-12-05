@@ -185,8 +185,9 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
     map_list = []
 
     #Reassign level for collapsed genotypes so 'genotype_group' will be referenced during plotting
-    if genotype_level=='collapse':
-        level = 'genotype_group'
+    if level == 'genotype':
+        if genotype_level == 'collapse':
+            level = 'genotype_group'
 
     #Make dictionaries for each point to be plotted on a plotly map
     for i in range(len(organized_df)):
@@ -246,13 +247,14 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
     layout = dict(
         title='Global distribution of RSV',
         sliders=[dict(
-            steps=steps)],
+            steps=steps, y=0.185)],
         geo=dict(
             scope='world',
             showland=True,
             landcolor='rgb(217, 217, 217)',
             countrywidth=1,
-            ),)
+            ),
+        legend=dict(x=1.02, y=0.5))
 
     fig = dict(data=map_list, layout=layout)
     py.plot(fig)

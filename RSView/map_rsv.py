@@ -249,7 +249,7 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2018]):
     layout = dict(
         title='Global distribution of RSV',
         sliders=[dict(
-            steps=steps, y=0.185)],
+            steps=steps, y=0.16)],
         geo=dict(
             scope='world',
             showland=True,

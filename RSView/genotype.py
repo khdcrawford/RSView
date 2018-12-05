@@ -42,8 +42,7 @@ def merge_csvs(csv_files):
     return full_df
 
 def main():
-"""Align downloaded sequences, call genotypes, and return final dataframe"""
-
+    """Align downloaded sequences, call genotypes, and return final df"""
     parser = RSView.parsearguments.genotypeParser()
     args = vars(parser.parse_args())
     prog = parser.prog
@@ -173,8 +172,8 @@ def main():
             for gt in gt_seqs:
                 gt_seq = gt_seqs[gt]
                 gt_hds[gt] = hamming_distance(gt_seq, str(record.seq))
-            # At most 60 '-' in gt_refseq, so must match >= 50 addn'l sites
-            if min(gt_hds.values()) < (len(record.seq) - 110):
+            # At most 60 '-' in gt_refseq, so must match >= 80 addn'l sites
+            if min(gt_hds.values()) < (len(record.seq) - 140):
                 new_gt = min(gt_hds, key=gt_hds.get)
                 gt_assigned += 1
                 if record.description.split(' ')[1] == 'B':

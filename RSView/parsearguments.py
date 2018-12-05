@@ -81,9 +81,13 @@ def genotypeParser():
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--inprefix', required=True, type=str, help="Prefix "\
             "pointing to downloaded sequences and metadata files. --inprefix"\
-            "name should be truncated where differences begin between files "\
-            "that will be combined into one dataframe. Example: "\
-            "'./data/RSV_G_gb_metadata_'. ")
+            " name should be truncated where differences begin between files"\
+            " that will be combined into one dataframe. Example: "\
+            "'./data/RSVG_gb_metadata_'. ")
+    parser.add_argument('--seqsdir', required=True, type=str, help="Directory"\
+            " for outputting generated fasta and alignment files.")
+    parser.add_argument('--outfile', required=True, type=str, help="Output "\
+            "file for genotyped `.csv`.")
     return parser
 
 def plotParser(allowedData=""):

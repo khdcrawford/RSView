@@ -206,9 +206,6 @@ def main():
 	if not os.path.isdir(args['outdir']):
 		os.makedirs(args['outdir'])
 
-	if not os.path.isdir('{0}'.format(args['outdir'])):
-		os.makedirs('{0}'.format(args['outdir']))
-
 	maxIDs = getIDs(database, maxseqs, query)
 	num_all = len(maxIDs)
 	if num_all < maxseqs:

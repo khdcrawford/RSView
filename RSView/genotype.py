@@ -42,6 +42,7 @@ def merge_csvs(csv_files):
     return full_df
 
 def main():
+"""Align downloaded sequences, call genotypes, and return final dataframe"""
 
     parser = RSView.parsearguments.genotypeParser()
     args = vars(parser.parse_args())

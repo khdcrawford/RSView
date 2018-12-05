@@ -205,7 +205,7 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
                 sizemode='diameter'),
             hovertext=(organized_df.loc[i, 'country'] + ', ' + str(level) + ' ' +
                        organized_df.loc[i, level] + ' : ' + str(organized_df.loc[i, 'count'])+
-                       'sequences'),
+                       ' sequences'),
             name=organized_df.loc[i, 'country']+' '+organized_df.loc[i, level],
             legendgroup=organized_df.loc[i, level],
             showlegend=False,

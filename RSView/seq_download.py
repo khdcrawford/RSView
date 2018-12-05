@@ -219,17 +219,24 @@ def main():
 	if not os.path.isdir('{0}'.format(args['outdir'])):
 		os.makedirs('{0}'.format(args['outdir']))
 
+	maxIDs = getIDs(database, maxseqs, query)
+	num_all = len(maxIDs)
+	if num_all < maxseqs:
+		print('There are {0} IDs that match the query.'.format(num_all))
+	elif num_all == maxseqs:
+		print('There are at least {0} IDs that match the query. `maxseqs` '\
+			  'may be limiting the number of IDs returned.')
+
 	while begin < maxseqs:
 		end = begin + filesize
 		outfile = '{0}/{1}_{2}-{3}.csv'.format(args['outdir'], 
 				  args['outprefix'], begin, end)
-		print('Downloading seq file number {0}.'.format(int(
-				math.ceil(end/filesize))))
+		print('Downloading seq file number {0} of {1}.'.format(
+			int(math.ceil(end/filesize)), int(math.ceil(num_all/filesize))))
 		print('Saving sequences and metadata to: {0}'.format(outfile))
 
 		IDs = getIDs(database, end, query)
 		numseqs = len(IDs)
-		print('Search returned {0} hits.'.format(numseqs))
 
 		start = begin
 		print('Downloading metadata for seqs: {0} to {1}'.format(start, numseqs))
@@ -252,7 +259,6 @@ def main():
 		assert len(full_df.index) == (numseqs-begin), 'Exported unexpected ' \
 				'number of seqs. Expected: {0} Retrieved: {1}'.format(
 				(numseqs-begin), len(full_df.index))
-		#print(full_df.drop(['db_xref', 'country', 'host'], axis=1))
 		full_df.to_csv(outfile)
 
 		begin = end

@@ -69,6 +69,10 @@ def seqParser():
 
     return parser
 
+def genotypeParser():
+    """Returns argparser for genotype.py"""
+    return parser
+
 def plotParser(allowedData=""):
     parser = argparse.ArgumentParser(description="Plot data on child death "\
             "rates from acute respiratory infection", 

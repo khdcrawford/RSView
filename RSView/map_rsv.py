@@ -30,13 +30,15 @@ def organize_data(datafiles, genotype_dict):
     information.
     """
 
-    rsv_df = pd.DataFrame()
-
+    #Return error if data files are not present
     for filename in datafiles:
         if os.path.isfile(filename):
             pass
         else:
             raise Error('Sequence data has not been downloaded yet. Run seq_download.py')
+
+    #Append relevant columns from all data files to DataFrame
+    rsv_df = pd.DataFrame()
 
     for datafile in datafiles:
         temp_df = pd.read_csv(datafile, usecols=['collection_date', 'country', 'subtype',
@@ -51,7 +53,8 @@ def organize_data(datafiles, genotype_dict):
     #Fix specific country names where city is given
     countries_with_cities = ['Brazil', 'China', 'Russia', 'New Zealand', 'Spain', 'Kenya',
                              'Germany', 'Egypt', 'India', 'Japan', 'Canada', 'Italy',
-                             'Malaysia', 'Jordan', 'Saudi Arabia', 'Myanmar', 'Netherlands']
+                             'Malaysia', 'Jordan', 'Saudi Arabia', 'Myanmar', 'Netherlands',
+                             'France', 'Peru']
     for con in countries_with_cities:
         rsv_df['country'] = np.where(rsv_df['country'].str.contains(con), con, rsv_df['country'])
 
@@ -64,6 +67,9 @@ def organize_data(datafiles, genotype_dict):
                                  rsv_df['country'])
     rsv_df['country'] = np.where(rsv_df['country'].str.contains('Laos'), 'Lao PDR',
                                  rsv_df['country'])
+
+    #Only keep sequences with an assigned subtype
+    rsv_df = rsv_df[rsv_df['subtype'].notnull()]
 
     return rsv_df
 
@@ -81,6 +87,7 @@ def count_types(rsv_df, jitter_dict, level, genotype_level='collapse'):
                           usecols=['name', 'brk_a3', 'Longitude', 'Latitude']
                           ).rename(columns={'name':'country', 'brk_a3': 'country_code'})
 
+    #Level specified by required argument
     if level == 'subtype':
         #count number of rows(seqs) from each country that are each subtype
         df_group = pd.DataFrame({'count' : rsv_df.groupby(['country', 'subtype',
@@ -93,6 +100,7 @@ def count_types(rsv_df, jitter_dict, level, genotype_level='collapse'):
         #count number of rows(seqs) from each country that are each subtype
         genotype_subset = rsv_df[rsv_df['genotype'].notnull()]
 
+        #genotype_level can be specified by an optional argument
         if genotype_level == 'collapse':
             df_group = pd.DataFrame(
                 {'count' : genotype_subset.groupby(['country', 'subtype', 'genotype_group',
@@ -137,6 +145,7 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
     the plot allows the user to scroll through time to see how RSV distribution changes over time.
     """
 
+    #years can specified by an optional argument
     if years == 'all':
         year_range = [yr for yr in range(int(organized_df.year.min()),
                       int(organized_df.year.max()))]
@@ -148,6 +157,7 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
         cmap = {'A':'royalblue', 'B':'salmon'}
 
     elif level == 'genotype':
+        #genotype_level can be specified by an optional argument
         if genotype_level == 'collapse':
             a_genotypes = list(set(organized_df[organized_df['subtype'] == 'A']
                                    ['genotype_group'].tolist()))
@@ -174,10 +184,11 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2017]):
     scale_markers = 1
     map_list = []
 
-
+    #Reassign level for collapsed genotypes so 'genotype_group' will be referenced during plotting
     if genotype_level=='collapse':
         level = 'genotype_group'
 
+    #Make dictionaries for each point to be plotted on a plotly map
     for i in range(len(organized_df)):
 
         map_country = dict(

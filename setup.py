@@ -7,7 +7,7 @@ try:
 except ImportError:
     from distutils.core import setup, find_packages, Extension
 
-#Check using Python 3
+# Check that using Python 3
 if not (sys.version_info[0] == 3):
     raise RuntimeError('RSView requires Python 3.x\n'
             'You are using Python {0}.{1}'.format(

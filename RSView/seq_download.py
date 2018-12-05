@@ -6,20 +6,7 @@ import os
 import math
 import RSView.parsearguments
 
-#Write argparser
-
-
-outfile = './data/RSVG_gb_metadata_15000+.csv'
-
-database = "nuccore"
-maxseqs = 20000
-query = "human respiratory syncytial virus G"
-filetype = "gb"
-outmode = "xml"
-begin = 15000
-
-batchsize = min(maxseqs - begin, 100)
-
+# Initialize lists for genotype assignment
 GTA_LIST = [r'\bGA\s?[0-9]*\b', r'\bNA\s?[0-9]*\b', r'\bSAA\s?[0-9]*\b',
 		   r'\bON\s?[0-9]*\b']
 
@@ -203,6 +190,9 @@ def main():
 	args = vars(parser.parse_args())
 	prog = parser.prog
 
+	print("\nExecuting {0} ({1}) in {2} at {3}.\n".format(
+			prog, RSView.__version__, os.getcwd(), time.asctime()))
+
 	Entrez.email = args['email']
 	query = args['query']
 	begin = args['firstseq']
@@ -222,16 +212,18 @@ def main():
 	maxIDs = getIDs(database, maxseqs, query)
 	num_all = len(maxIDs)
 	if num_all < maxseqs:
-		print('There are {0} IDs that match the query.'.format(num_all))
+		print('There are {0} IDs that match the query:\n\t{1}'.format(num_all, 
+				query))
 	elif num_all == maxseqs:
-		print('There are at least {0} IDs that match the query. `maxseqs` '\
-			  'may be limiting the number of IDs returned.')
+		print('There are at least {0} IDs that match the query:\n\t{1}\n'\
+				'`--maxseqs` may be limiting number of IDs returned.'.format(
+				num_all, query))
 
 	while begin < maxseqs:
 		end = begin + filesize
 		outfile = '{0}/{1}_{2}-{3}.csv'.format(args['outdir'], 
-				  args['outprefix'], begin, end)
-		print('Downloading seq file number {0} of {1}.'.format(
+				args['outprefix'], begin, end)
+		print('\nDownloading seq file number {0} of {1}.'.format(
 			int(math.ceil(end/filesize)), int(math.ceil(num_all/filesize))))
 		print('Saving sequences and metadata to: {0}'.format(outfile))
 

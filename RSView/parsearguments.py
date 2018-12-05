@@ -1,6 +1,7 @@
 """Argument parser for `RSView`"""
 
 import sys
+import os
 import argparse
 import RSView
 
@@ -38,16 +39,16 @@ def seqParser():
             description='Downloads RSV G protein sequences & metadata from '\
             'Genbank. This program is part of {0} (version {1}) written by '\
             '{2}.'.format(RSView.__name__, RSView.__version__, 
-                    RSView.__author__) + 'For documentation, see '
-                    '{0}'.format(RSView.__url__), 
-                    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+            RSView.__author__) + 'For documentation, see {0}'.format(
+            RSView.__url__), 
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--email', required=True, type=str, help='User email'\
             ' for GenBank download.')
     parser.add_argument('--query', required=True, type=str, help='Search '\
             'term(s) for downloading sequences from GenBank.')
-    parser.add_argument('--outdir', default='./data', type=str,
-            help='Directory for downloaded data.')
-    parser.add_argument('--outprefix', default='RSVgb_metadata', type=str, 
+    parser.add_argument('--outdir', required=True, type=str, help='Directory'\
+            'for downloaded data.')
+    parser.add_argument('--outprefix', default='RSVG_gb_metadata', type=str, 
             help='Beginning of file name for output `.csv`. Suffix will '\
             'specify number of sequences downloaded.')
     parser.add_argument('--db', default='nuccore', type=str, help='Entrez'\
@@ -71,6 +72,18 @@ def seqParser():
 
 def genotypeParser():
     """Returns argparser for genotype.py"""
+    parser = ArgumentParserNoArgHelp(
+            description='Given RSV G protein sequences & metadata downloaded '\
+            'from Genbank, fill in missing genotype data. This program is part '\
+            ' of {0} (version {1}) written by {2}.'.format(RSView.__name__, 
+            RSView.__version__, RSView.__author__) + 'For documentation, see '
+            '{0}'.format(RSView.__url__), 
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--inprefix', required=True, type=str, help="Prefix "\
+            "pointing to downloaded sequences and metadata files. --inprefix"\
+            "name should be truncated where differences begin between files "\
+            "that will be combined into one dataframe. Example: "\
+            "'./data/RSV_G_gb_metadata_'. ")
     return parser
 
 def plotParser(allowedData=""):

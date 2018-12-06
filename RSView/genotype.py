@@ -27,7 +27,7 @@ def hamming_distance(s1, s2):
     return sum(site1 != site2 for site1, site2 in zip(s1, s2))
 
 def merge_csvs(csv_files):
-    """Merge given csv *files* into one dataframe"""
+    """Merge given *csv_files* into one dataframe"""
     file_frames = []
     for file in csv_files:
         if not os.path.isfile(file):
@@ -41,60 +41,35 @@ def merge_csvs(csv_files):
 
     return full_df
 
-def main():
-    """Align downloaded sequences, call genotypes, and return final df"""
-    parser = RSView.parsearguments.genotypeParser()
-    args = vars(parser.parse_args())
-    prog = parser.prog
+def seqstofastas(seqs_df, outfiles):
+    """
+    Take a dataframe containing sequence, subtype, and genotype info and
+    output specified `.fasta` files. 
 
-    print("\nExecuting {0} ({1}) in {2} at {3}.\n".format(
-            prog, RSView.__version__, os.getcwd(), time.asctime()))
+    Args:
+        `outfiles` (list)
+            List of `.fasta` files to output. Expects 3 files:
+                1. Long G seqs already genotyped
+                2. Long G seqs not yet genotyped
+                3. All short G seqs
+    """
 
-    files = [filename for filename in glob.glob('{0}*.csv'.format(
-            args['inprefix']))]
-    
-    if not os.path.isdir('{0}'.format(args['seqsdir'])):
-        os.makedirs('{0}'.format(args['seqsdir']))
-    
-    seqsdir = args['seqsdir']
-    outfile = args['outfile']
+    assert len(outfiles) == 3, 'Unexpected number of files to output.'
 
-    hd_threshold = args['threshold']
+    lt_fasta = outfiles[0]
+    l_fasta = outfiles[1]
+    s_fasta = outfiles[2]
 
-    print('Input files: {0}'.format(files))
-
-    file_frames = []
-    for file in files:
-        if not os.path.isfile(file):
-            raise ValueError('Sequence data not downloaded. Run '\
-                    '`seq_download.py`.')
-        file_df=pd.read_csv(file)
-        file_frames.append(file_df)
-
-    rsv_df = merge_csvs(files)
-
-    seqs=rsv_df[['G_seq', 'genotype', 'subtype']]
-    seqs = seqs.fillna(value='NaN') #easily callable placeholder
-
-    #Establish files for seqs. Make 3 files for iterative alignment.
-    longtyped_fasta = '{0}/G_seqs_longtyped.fasta'.format(seqsdir)
-    long_fasta = '{0}/G_seqs_long_nogt.fasta'.format(seqsdir)
-    short_fasta = '{0}/G_seqs_short.fasta'.format(seqsdir)
-
-    #Keep track of sequences with genotypes downloaded from GenBank
-    already_genotyped = 0
-
-    with open(longtyped_fasta, 'w') as longtyped, \
-         open(long_fasta, 'w') as long_nogt, \
-         open(short_fasta, 'w') as short:
-        for i in range(len(seqs)):
-            st = seqs.at[i, 'subtype']
-            gt = seqs.at[i, 'genotype']
+    with open(lt_fasta, 'w') as longtyped, \
+         open(l_fasta, 'w') as long_nogt, \
+         open(s_fasta, 'w') as short:
+        for i in range(len(seqs_df)):
+            st = seqs_df.at[i, 'subtype']
+            gt = seqs_df.at[i, 'genotype']
             header = '>{0} {1} {2}\n'.format(i, st, gt)
-            seq = seqs.at[i, 'G_seq']
+            seq = seqs_df.at[i, 'G_seq']
             if seq != 'NaN':
                 if gt != 'NaN':
-                    already_genotyped += 1
                     if len(seq) > 290:
                         longtyped.write('{0}{1}\n'.format(header, seq))
                     else:
@@ -104,27 +79,41 @@ def main():
                         long_nogt.write('{0}{1}\n'.format(header, seq))
                     else:
                         short.write('{0}{1}\n'.format(header, seq))
+
+def align_seqs(infiles, outfiles):
+    """Use mafft to align RSV G sequences. 
+
+    Due to significant disparities in length, use a three step approach.
+        1. Align long G sequences with known genotypes
+        2. Add in all long G sequences using --add with --keeplength
+        3. Add in short G sequences using --addfragments with --keeplength
     
-    # Establish files for alignments
-    aligned_ltyped = '{0}/G_longtyped_aligned.fasta'.format(seqsdir)
-    aligned_long = '{0}/G_long_all_aligned.fasta'.format(seqsdir)
-    aligned_all = '{0}/G_all_aligned.fasta'.format(seqsdir)
+    Expects to align 1st infile and ouput to first outfile, then add 2nd 
+    infile and output as 2nd outfile, and finally add 3rd infile and output
+    as 3rd outfile.
+    
+    Have this as a separate command, so is easy to not do for troubleshooting
+    """
 
-    # Make alignments 
-    # subprocess.check_call('mafft --auto {0} > {1}'.format(longtyped_fasta, 
-    #         aligned_ltyped), shell=True)
+    assert len(infiles) == len(outfiles) == 3, 'Incorrect number of files '\
+            'for i/o.'
 
-    # subprocess.check_call('mafft --add {0} --reorder --keeplength {1} > {2}'\
-    #         .format(long_fasta, aligned_ltyped, aligned_long), shell=True)
+    subprocess.check_call('mafft --auto {0} > {1}'.format(infiles[0], 
+            outfiles[0]), shell=True)
 
-    # subprocess.check_call('mafft --addfragments {0} --reorder --6merpair '\
-    #         '--thread -1 --keeplength {1} > {2}'.format(short_fasta, 
-    #         aligned_long, aligned_all), shell=True)
+    subprocess.check_call('mafft --add {0} --reorder --keeplength {1} > {2}'\
+            .format(infiles[1], outfiles[0], outfiles[1]), shell=True)
 
-    # Set reference seqs for each genotype
+    subprocess.check_call('mafft --addfragments {0} --reorder --6merpair '\
+            '--thread -1 --keeplength {1} > {2}'.format(infiles[2], 
+            outfiles[1], outfiles[2]), shell=True)
+
+
+def getrefseqs(ltyped_alignment, full_alignment):
+    """"""
     gt_seqs = {}
     # Set reference seqs with long seqs first
-    for record in SeqIO.parse(aligned_ltyped, 'fasta'):
+    for record in SeqIO.parse(ltyped_alignment, 'fasta'):
         genotype_info = record.description.split(' ')
         if len(genotype_info) == 3:
             genotype = genotype_info[-1]
@@ -133,12 +122,12 @@ def main():
             if genotype == 'BAIV':
                 genotype = 'BA4'
         if genotype not in gt_seqs.keys():
-            if 'X' not in str(record.seq):
+            if 'X' not in str(record.seq): # No ambiguous amino acids
                 gt_seqs[genotype] = str(record.seq)
 
     # Add ref seqs for genotypes with no 'long' seq
     added_gts = {}
-    for record in SeqIO.parse(aligned_all, 'fasta'):
+    for record in SeqIO.parse(full_alignment, 'fasta'):
         genotype_info = record.description.split(' ')
         if len(genotype_info) == 3:
             if genotype_info[-1] != 'NaN':
@@ -154,37 +143,47 @@ def main():
                 else:
                     added_gts[genotype].append(str(record.seq))
     
-    # Pick new reference seq with least number of gaps
+    # Pick added reference seq with least number of gaps. Must have < 60.
     for added_gt in added_gts:
         possible_refs = added_gts[added_gt]
         gt_refseq = min(possible_refs, key=lambda seq: seq.count('-'))
         if gt_refseq.count('-') < 60:
             gt_seqs[added_gt] = gt_refseq
 
-    # Keep track of number of new genotypes assigned and number of sequences
-    # mistyped based on subtype/genotype disagreement
-    gt_assigned = 0
+    return gt_seqs
+
+def assign_gt(alignment, gt_refdict, hd_threshold):
+    """ 
+
+    Return:
+        `updated_gts` (list of tuples)
+            List of df index and new genotype for sequences with new gt
+    """
+
+    updated_gts = []
+
+    #Keep track of number seqs mistyped based on subtype/genotype disagreement
     mistyped = 0
-    for record in SeqIO.parse(aligned_all, 'fasta'):
+
+    for record in SeqIO.parse(alignment, 'fasta'):
         genotype = record.description.split(' ')[2]
         subtype = record.description.split(' ')[1]
         # only add genotypes for seqs with subtypes so can check concordance
         if genotype == 'NaN' and subtype != 'NaN':
             gt_hds = {}
-            for gt in gt_seqs:
-                gt_seq = gt_seqs[gt]
-                gt_hds[gt] = hamming_distance(gt_seq, str(record.seq))
+            for gt in gt_refdict:
+                gt_ref = gt_refdict[gt]
+                gt_hds[gt] = hamming_distance(gt_ref, str(record.seq))
             # At least *hd_threshold* sites must match to call genotype.
             if min(gt_hds.values()) < (len(record.seq) - hd_threshold):
                 new_gt = min(gt_hds, key=gt_hds.get)
-                gt_assigned += 1
                 if record.description.split(' ')[1] == 'B':
                     if new_gt not in GT_B_LIST:
                         mistyped+=1
                         print("\nSeq: {0}. Genotype {1} and subtype {2} "\
                               "discordant. Reset genotype to 'NaN'.".format(
                               record.name, new_gt, 'B'))
-                    new_gt = 'NaN'
+                        new_gt = 'NaN'
 
                 elif record.description.split(' ')[1] == 'A':
                     if new_gt not in GT_A_LIST:
@@ -193,12 +192,95 @@ def main():
                               "discordant. Reset genotype to 'NaN'.".format(
                               record.name, new_gt, 'A'))
                         new_gt = 'NaN'
+            
+                updated_gts.append((record.name, new_gt))
+    
+    return [updated_gts, mistyped]
 
-    print('\n{0} seqs previously genotyped.'.format(already_genotyped))
-    print("{0} genotypes mistyped and reset to 'NaN'.".format(mistyped))
-    print('{0} genotypes added.'.format(gt_assigned))
-    print("{0} seqs now genotyped.".format(already_genotyped + gt_assigned))
+
+def main():
+    """Align downloaded sequences, call genotypes, and return final df"""
+
+    parser = RSView.parsearguments.genotypeParser()
+    args = vars(parser.parse_args())
+    prog = parser.prog
+
+    print("\nExecuting {0} ({1}) in {2} at {3}.\n".format(
+            prog, RSView.__version__, os.getcwd(), time.asctime()))
+
+    files = [filename for filename in glob.glob('{0}*.csv'.format(
+            args['inprefix']))]
+    
+    if not os.path.isdir('{0}'.format(args['seqsdir'])):
+        os.makedirs('{0}'.format(args['seqsdir']))
+    
+    hd_threshold = args['threshold']
+
+    print('Input files: {0}'.format(files))
+
+    file_frames = []
+    for file in files:
+        if not os.path.isfile(file):
+            raise ValueError('Sequence data not downloaded. Run '\
+                    '`seq_download.py`.')
+        file_df=pd.read_csv(file)
+        file_frames.append(file_df)
+
+    rsv_df = merge_csvs(files)
+
+    seqs=rsv_df[['G_seq', 'genotype', 'subtype']]
+
+    already_genotyped = sum(seqs['genotype'].value_counts())
+
+    print('\nStarting with {0} of {1} seqs genotyped.\n'.format(
+            already_genotyped, len(seqs)))
+
+    seqs = seqs.fillna(value='NaN') #easily callable placeholder
+
+    #Establish files for seqs. Make 3 files for iterative alignment.
+    longtyped_fasta = '{0}/G_seqs_longtyped.fasta'.format(args['seqsdir'])
+    long_fasta = '{0}/G_seqs_long_nogt.fasta'.format(args['seqsdir'])
+    short_fasta = '{0}/G_seqs_short.fasta'.format(args['seqsdir'])
+
+    seqs_files = [longtyped_fasta, long_fasta, short_fasta]
+
+    seqstofastas(seqs, seqs_files)
+    
+    # Establish files for alignments
+    aligned_ltyped = '{0}/G_longtyped_aligned.fasta'.format(args['seqsdir'])
+    aligned_long = '{0}/G_long_all_aligned.fasta'.format(args['seqsdir'])
+    aligned_all = '{0}/G_all_aligned.fasta'.format(args['seqsdir'])
+
+    alignment_files = [aligned_ltyped, aligned_long, aligned_all]
+
+    # Make alignments 
+    align_seqs(seqs_files, alignment_files)
+    
+    # Set reference seqs for each genotype
+    gt_refs = getrefseqs(aligned_ltyped, aligned_all)
+
+    # Assign new genotypes and calculate number mistyped
+    new_gt_info = assign_gt(aligned_all, gt_refs, hd_threshold)
+    new_gts = new_gt_info[0]
+    num_mistyped = new_gt_info[1]
+
+    print("\n{0} genotypes mistyped and reset to 'NaN'.".format(num_mistyped))
+    print('{0} genotypes added.'.format(len(new_gts) - num_mistyped))
+    print("{0} seqs now genotyped.".format(already_genotyped + len(new_gts) 
+            - num_mistyped))
+
+    # Assign genotypes back to full dataframe
+    for new_gt in new_gts:
+        rsv_df.loc[int(new_gt[0]), 'genotype'] = new_gt[1]
+
+    # Make a clean df with relevant columns and save as `.csv`
+    clean_df=rsv_df[['collection_date', 'country', 'subtype', 'genotype', 'G_seq']]
+    clean_df.to_csv(args['outfile'])
 
 
 if __name__ == '__main__':
+    start_time = time.time()
     main()
+    end_time = time.time()
+    print('Finished at {0}. Took {1:.3f} minutes to run.'.format(
+            time.asctime(), (end_time - start_time)/60))

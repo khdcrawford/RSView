@@ -83,11 +83,11 @@ def genotypeParser():
             "pointing to downloaded sequences and metadata files. --inprefix"\
             " name should be truncated where differences begin between files"\
             " that will be combined into one dataframe. Example: "\
-            "'./data/RSVG_gb_metadata_'. ")
+            "'./data/RSVG_gb_metadata'. ")
     parser.add_argument('--seqsdir', required=True, type=str, help="Directory"\
             " for outputting generated fasta and alignment files.")
     parser.add_argument('--outfile', required=True, type=str, help="Output "\
-            "file for genotyped `.csv`.")
+            "file for cleaned, genotyped `.csv`.")
     parser.add_argument('--threshold', type=int, default=150, 
             help="Threshold for how many sites must match in order to call a"\
             " genotype.")

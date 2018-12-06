@@ -10,13 +10,20 @@ The package `RSView` analyzes RSV G gene sequences in conjunction with informati
 
 ## Software Components
 
-- Visualization Manager: Via dropdown menus, the User can specify options for how the data is displayed (i.e. color dots by year or by subtype; dot size representing prevalence or disease severity)
+- Argument Parser: parsearguments.py will handle user input
 
-- Subtype Selector: The User provides input by selecting which subtype or genotype they wish to display from a dropdown menu. The output is a map with that subset of data.
+- Sequence Downloader: with seq_download.py, the user can download the RSV genotype and subtype data from GenBank and process it into a usable format
 
-- Year Selector: The User provides input via a) a slider to select which years to include and/or b) a checkbox to select which seasons to include (i.e. winter, summer). The output is a map with that subset of data.
+- Genotype Assigner: genotype.py will assign genotypes to RSV G sequences. This program relies on some sequences already being genotyped. It will not add sequences to a genotype that does not already have a high quality (< 60 gaps in the alignment) sequence in the input data.
 
-- Data Comparer: This component takes the subset of data currently displayed on the map and generates a graph displaying the number of childhood deaths due to pneumonia for that region and time period 
+- Health Data Processor: health_download.py will download and process the data on deaths resulting from acute respiratory infection into a usable dataframe.
+
+- RSV Mapper: map_rsv.py will map the global distribution of Respiratory Syncytial Virus (RSV) by collection date, location,
+and viral subtype or genotype.
+
+- Health Data Plotter: plot_rsv.py will plot health metrics from the health data set either using summary data for each country or yearly data for a specified country.
+
+- Health:Subtype Plotter: plot_correlation.py will integrate the health and RSV datasets and plot health metrics as a function of the relative prevalence of subtypes A and B in that country.
 
 
 ## Interactions to Accomplish Use Cases

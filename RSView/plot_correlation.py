@@ -106,7 +106,14 @@ def merge_ratio_health(df_ratio):
 
 	return df_merge
 
+def merge_ratio_health_year(df_ratio):
+	
+	df_health_all = pd.read_csv('./data/health_data_all.csv')
+	df_ratio["iso3"] = [country_to_iso3(x) for x in df_ratio.country.values]
+	
+	df_merge = pd.merge(df_ratio, df_health_all, how='inner', on=['iso3','year'])
 
+	return df_merge
 
 
 
@@ -160,8 +167,8 @@ def plot_ratio_year(df_merge, data_type):
 					color=df_merge['year'],
 					colorscale='RdBu',
 					showscale=True,
-					cmin=1990,
-					cmax=2018
+					# cmin=1990,
+					# cmax=2018
 				   ),
 		text = df_merge['hover'] # The hover text goes here... 
 	)
@@ -209,7 +216,7 @@ def main(level, data_type):
 	else:
 		rsv_df_count = count_subtypes_year(rsv_df)
 		df_ratio_year = get_ratio_year(rsv_df_count)
-		df_merged = merge_ratio_health(df_ratio_year)
+		df_merged = merge_ratio_health_year(df_ratio_year)
 		plot_ratio_year(df_merged, data_type)
 
 	

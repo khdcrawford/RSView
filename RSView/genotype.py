@@ -26,6 +26,7 @@ def hamming_distance(s1, s2):
     assert len(s1) == len(s2), "Undefined for sequences of unequal length"
     return sum(site1 != site2 for site1, site2 in zip(s1, s2))
 
+
 def merge_csvs(csv_files):
     """Merge given *csv_files* into one dataframe"""
     file_frames = []
@@ -41,6 +42,7 @@ def merge_csvs(csv_files):
 
     return full_df
 
+
 def seqstofastas(seqs_df, outfiles):
     """
     Take a dataframe containing sequence, subtype, and genotype info and
@@ -53,7 +55,6 @@ def seqstofastas(seqs_df, outfiles):
                 2. Long G seqs not yet genotyped
                 3. All short G seqs
     """
-
     assert len(outfiles) == 3, 'Unexpected number of files to output.'
 
     lt_fasta = outfiles[0]
@@ -79,6 +80,7 @@ def seqstofastas(seqs_df, outfiles):
                         long_nogt.write('{0}{1}\n'.format(header, seq))
                     else:
                         short.write('{0}{1}\n'.format(header, seq))
+
 
 def align_seqs(infiles, outfiles):
     """Use mafft to align RSV G sequences. 

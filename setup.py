@@ -41,7 +41,7 @@ setup(
                   'Correlation of genotypes with childhood pneumonia deaths.',
     long_description = readme,
     license = 'MIT License',
-    install_requires = ['biopython>=1.72', 'plotly>=3.4', 'pandas>=0.23'],
+    install_requires = ['biopython', 'plotly', 'pandas'],
     packages=find_packages(exclude=['docs', 'tests']),
     package_dir = {'viralseq_mapping':'RSView'},
     scripts = ['RSView/seq_download.py',

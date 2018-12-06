@@ -145,6 +145,8 @@ def plot_ratio(df_merge, data_type):
 	fig= go.Figure(data=data, layout=layout)
 	plot(fig)
 
+
+
 def plot_ratio_year(df_merge, data_type):
 
 	df_merge['hover'] = df_merge['country_short'] + ', ' + df_merge['year'].astype(int).map(str)
@@ -156,7 +158,7 @@ def plot_ratio_year(df_merge, data_type):
 		marker= dict(size= 14,
 					line= dict(width=1),
 					color=df_merge['year'],
-					#colorscale='Cividis',
+					colorscale='RdBu',
 					showscale=True,
 					cmin=1990,
 					cmax=2018

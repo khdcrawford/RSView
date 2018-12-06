@@ -67,3 +67,9 @@ Using plot_rsv.py, the user can plot different metrics measuring the differentia
 If the user would like to examine health trends in their country of interest more specifically, plot_rsv.py can also be used to plot the trend in health metrics for that country from 2000-2016.
 
 ![alt text](../examples/rsvplot_time.png)
+
+### Use Case 4: Analyze the correlation between RSV subtype prevalence and health impact
+
+Using plot_correlation.py, the user can examine the relationship between the health impacts of acute respiratory infections and the prevalence of RSV subtype A or B in that region. This can additionally be used to plot the shift in prevalence between subtypes over time and look for potential correlation between these shifts and a change in death rates.
+
+![alt text](../examples/correlation_year.png)

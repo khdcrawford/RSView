@@ -14,6 +14,7 @@ import RSView.parsearguments
 
 JITTER_DICT = {'A':1.0, 'B':-1.0}
 DATAFILES = [filename for filename in glob.glob('./data/RSVG_gb_metadata*.csv')]
+HEALTHFILE = './data/health_data_all.csv'
 GENOTYPE_DICT = {'GA2':'GA', 'GA5':'GA', 'GB12':'GB', 'GB13':'GB', 'GA3':'GA', 'NA1':'NA',
                  'NA2':'NA', 'ON1':'ON', 'SAA1':'SAA', 'BA':'BA', 'BA10':'BA', 'BA9':'BA',
                  'GB3':'GB', 'SAB1':'SAB', 'SAB3':'SAB', 'SAB4':'SAB', 'NA3':'NA', 'GB2':'GB',
@@ -87,6 +88,9 @@ def count_types(rsv_df, jitter_dict, level, genotype_level='collapse'):
                           usecols=['name', 'brk_a3', 'Longitude', 'Latitude']
                           ).rename(columns={'name':'country', 'brk_a3': 'country_code'})
 
+    health_data = pd.read_csv(HEALTHFILE, usecols=['country', 'year',
+                              'fufive9']).rename(columns={'fufive9':'under_five_deaths'})
+
     #Level specified by required argument
     if level == 'subtype':
         #count number of rows(seqs) from each country that are each subtype
@@ -95,6 +99,8 @@ def count_types(rsv_df, jitter_dict, level, genotype_level='collapse'):
 
         #compile country-specific subtype count data with lat and long for plotting
         organized_df = df_group.merge(lat_lon, how='left', left_on='country', right_on='country')
+        organized_df = organized_df.merge(health_data, how='left', left_on=['country', 'year'],
+                                      right_on=['country', 'year'])
 
     elif level == 'genotype':
         #count number of rows(seqs) from each country that are each subtype
@@ -112,7 +118,8 @@ def count_types(rsv_df, jitter_dict, level, genotype_level='collapse'):
 
         #compile country-specific subtype count data with lat and long for plotting
         organized_df = df_group.merge(lat_lon, how='left', left_on='country', right_on='country')
-
+        organized_df = organized_df.merge(health_data, how='left', left_on=['country', 'year'],
+                                      right_on=['country', 'year'])
 
     #Jitter points for countries that have multiple subtypes, so markers on map don't overlap
     country_group = organized_df.groupby('country').size()
@@ -132,7 +139,6 @@ def count_types(rsv_df, jitter_dict, level, genotype_level='collapse'):
         print('Warning: the following country names do not match between sequence DataFrames and\
                "country_centroids.csv"' +
               str(organized_df[organized_df['adj_lon'].isnull()]['country']))
-
     return organized_df
 
 
@@ -205,9 +211,9 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2018]):
                 line=dict(width=0.5, color='rgb(40,40,40)'),
                 opacity=0.75,
                 sizemode='diameter'),
-            hovertext=(organized_df.loc[i, 'country'] + ', ' + str(level) + ' ' +
+            hovertext=(organized_df.loc[i, 'country'] + '<br>' + str(level) + ' ' +
                        organized_df.loc[i, level] + ' : ' + str(organized_df.loc[i, 'count'])+
-                       ' sequences'),
+                       ' sequences' + '<br>'+ 'Percent under 5 y.o. deaths due to Acute Respiratory Infection: ' + str(organized_df.loc[i, 'under_five_deaths'])),
             name=organized_df.loc[i, 'country']+' '+organized_df.loc[i, level],
             legendgroup=organized_df.loc[i, level],
             showlegend=False,

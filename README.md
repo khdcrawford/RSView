@@ -17,9 +17,21 @@ Furthermore, it is known that for some respiratory viruses, such as rhinovirus, 
 
 Together our project, `RSView`, will provide an important resource for better understanding the global circulation dynamics of RSV and investigating the effects of genotype on disease severity. We recognize that this is very much a "first-pass" analysis, but believe these analyses and, especially, this framework for examining RSV (which is modeled off of the nextstrain.org platform developed by Trevor Bedford and Richard Neher) could prove quite useful for the field.
 
-## Organization 
 
+## Directory Structure
 
+### RSView
+This directory includes code to download and prepare both the genotype and health data, as well as code to generate functional plots for analyzing the datasets both individually and as an integrated dataset.
+
+- data: includes the raw health data set as well as downloaded RSV genotype data sets
+
+- tests: unittests for the scripts included in RSView
+
+### examples
+This contains a jupyter notebook with example usage of the code containing in RSView as well as several graphs generated from these datasets
+
+### docs
+This includes component and functional specifications, including a description of expected use cases
 
 
 ## Installation
@@ -43,4 +55,3 @@ To replicate our analyses:
 * run `genotype.py` 
 
 * run `map_rsv.py` and/or `plot_rsv.py` with appropriate arguments.
-

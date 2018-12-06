@@ -59,6 +59,8 @@ def main():
     seqsdir = args['seqsdir']
     outfile = args['outfile']
 
+    hd_threshold = args['threshold']
+
     print('Input files: {0}'.format(files))
 
     file_frames = []
@@ -172,8 +174,8 @@ def main():
             for gt in gt_seqs:
                 gt_seq = gt_seqs[gt]
                 gt_hds[gt] = hamming_distance(gt_seq, str(record.seq))
-            # At most 60 '-' in gt_refseq, so must match >= 80 addn'l sites
-            if min(gt_hds.values()) < (len(record.seq) - 140):
+            # At least *hd_threshold* sites must match to call genotype.
+            if min(gt_hds.values()) < (len(record.seq) - hd_threshold):
                 new_gt = min(gt_hds, key=gt_hds.get)
                 gt_assigned += 1
                 if record.description.split(' ')[1] == 'B':

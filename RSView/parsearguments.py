@@ -88,6 +88,9 @@ def genotypeParser():
             " for outputting generated fasta and alignment files.")
     parser.add_argument('--outfile', required=True, type=str, help="Output "\
             "file for genotyped `.csv`.")
+    parser.add_argument('--threshold', type=int, default=150, 
+            help="Threshold for how many sites must match in order to call a"\
+            " genotype.")
     return parser
 
 def plotParser(allowedData=""):

@@ -25,11 +25,28 @@ and viral subtype or genotype.
 
 - Health:Subtype Plotter: plot_correlation.py will integrate the health and RSV datasets and plot health metrics as a function of the relative prevalence of subtypes A and B in that country.
 
-
 ## Interactions to Accomplish Use Cases
 
-A clinician interested in determining which RSV subtypes are most prevalent in their region would see that displayed on the RSView map. They could then select that subtype via the Subtype Selector to view where else that subtype has been recorded. To compare the prevalence of the subtype in different regions, they could use the Visualization Manager to change the dot size to represent disease prevalence. If they were in a region where RSV circulates more in the winter months, they could select that in the Year Selector. They could then use the Data Comparer to view the childhood pneumonia death analyses for this subtype in their region compared to other regions.
+### Use Case 1: Analyze global distribution of RSV genotypes or subtypes
 
+    1. Argument Parser will handle user input for the following steps:
+    2. Sequence Downloader will take arguments from Argument Parser to down load sequence data from GenBank
+    3. Genotype Assigner will take arguments from the Argument Parser and data downloaded by the Sequence Downloader to assign genotypes to sequences and add them to the dataframe.
+    4. RSV Mapper will then take the downloaded sequences from Sequence Downloader and genotypes from Genotype Assigner and plot them on a world map
+
+### Use Case 2 and 3: Analyze health impact of acute respiratory infections around the world
+
+    1. Argument Parser will handle user input for the following steps:
+    2. Health Data Processor will download the health metrics dataset and process it into a usable format
+    3. Health Data Processor will generate interactive graphs for analyzing health data on a global scale or on a country-specific, yearly basis
+
+### Use Case 4: Analyze the correlation between RSV subtype prevalence and health impact
+
+    1. Argument Parser will handle user input for the following steps:
+    2. Sequence Downloader will take arguments from Argument Parser to down load sequence data from GenBank
+    3. Genotype Assigner will take arguments from the Argument Parser and data downloaded by the Sequence Downloader to assign genotypes to sequences and add them to the dataframe.
+    4. Health Data Processor will download the health metrics dataset and process it into a usable format
+    5. Health:Subtype Plotter will integrate the health and sequence datasets and generate interactive graphs for analysis of the relationship between RSV subtype prevalence and health impact in different countries, both on a summary level and as these values change from year to year.
 
 ## Preliminary Plans
 

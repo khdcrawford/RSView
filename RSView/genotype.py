@@ -219,7 +219,7 @@ def main():
     if not os.path.isdir('{0}'.format(args['outdir'])):
         os.makedirs('{0}'.format(args['outdir']))
 
-    outfile = '{0}/RSVG_all_genotyped.csv'
+    outfile = '{0}/RSVG_all_genotyped.csv'.format(outdir)
     
     hd_threshold = args['threshold']
 

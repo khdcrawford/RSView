@@ -45,8 +45,10 @@ setup(
     packages=find_packages(exclude=['docs', 'tests']),
     package_dir = {'viralseq_mapping':'RSView'},
     scripts = ['RSView/seq_download.py',
-               'RSView/genotype.py'
-    #           'RSView/map_rsv.py'
-    #           'RSView/plot_rsv.py' 
+               'RSView/genotype.py',
+               'RSView/map_rsv.py',
+               'RSView/health_download.py',
+               'RSView/plot_rsv.py',
+               'RSView/plot_correlation.py'
                 ]
 )

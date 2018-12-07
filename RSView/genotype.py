@@ -215,6 +215,11 @@ def main():
     
     if not os.path.isdir('{0}'.format(args['seqsdir'])):
         os.makedirs('{0}'.format(args['seqsdir']))
+
+    if not os.path.isdir('{0}'.format(args['outdir'])):
+        os.makedirs('{0}'.format(args['outdir']))
+
+    outfile = '{0}/RSVG_all_genotyped.csv'
     
     hd_threshold = args['threshold']
 

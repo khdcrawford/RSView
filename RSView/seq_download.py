@@ -4,7 +4,7 @@ import time
 import re
 import os
 import math
-import RSView.parsearguments
+import rsview.parsearguments
 
 # Initialize lists for genotype assignment
 GTA_LIST = [r'\bGA\s?[0-9]*\b', r'\bNA\s?[0-9]*\b', r'\bSAA\s?[0-9]*\b',
@@ -186,12 +186,12 @@ def makedf(handle):
 def main():
 	"""Download sequence data and return dataframe"""
 
-	parser = RSView.parsearguments.seqParser()
+	parser = rsview.parsearguments.seqParser()
 	args = vars(parser.parse_args())
 	prog = parser.prog
 
 	print("\nExecuting {0} ({1}) in {2} at {3}.\n".format(
-			prog, RSView.__version__, os.getcwd(), time.asctime()))
+			prog, rsview.__version__, os.getcwd(), time.asctime()))
 
 	Entrez.email = args['email']
 	query = args['query']
@@ -209,7 +209,7 @@ def main():
 	maxIDs = getIDs(database, maxseqs, query)
 	num_all = len(maxIDs)
 	if num_all < maxseqs:
-		print('There are {0} IDs that match the query:\n\t{1}'.format(num_all, 
+		print('There are {0} IDs that match the query:\n\t{1}'.format(num_all,
 				query))
 	elif num_all == maxseqs:
 		print('There are at least {0} IDs that match the query:\n\t{1}\n'\
@@ -218,7 +218,7 @@ def main():
 
 	while begin < maxseqs:
 		end = begin + filesize
-		outfile = '{0}/{1}_{2}-{3}.csv'.format(args['outdir'], 
+		outfile = '{0}/{1}_{2}-{3}.csv'.format(args['outdir'],
 				args['outprefix'], begin, end)
 		print('\nDownloading seq file number {0} of {1}.'.format(
 			int(math.ceil(end/filesize)), int(math.ceil(num_all/filesize))))

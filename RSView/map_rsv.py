@@ -9,7 +9,7 @@ import plotly.plotly as py
 import matplotlib.pyplot as plt
 from matplotlib import colors
 
-import RSView.parsearguments
+import rsview.parsearguments
 
 
 JITTER_DICT = {'A':1.0, 'B':-1.0}
@@ -279,7 +279,7 @@ def main(level, genotype_level, years):
 
 if __name__ == "__main__":
 
-    parser = RSView.parsearguments.mapParser()
+    parser = rsview.parsearguments.mapParser()
     args = parser.parse_args()
 
     main(args.level, genotype_level=args.genotype_level, years=args.years)

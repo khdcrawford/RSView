@@ -2,7 +2,7 @@ import unittest
 import os
 from unittest.mock import patch
 
-import RSView.map_rsv as map_rsv
+import rsview.map_rsv as map_rsv
 
 class TestMapRsv(unittest.TestCase):
     """
@@ -57,7 +57,7 @@ class TestMapRsv(unittest.TestCase):
                         len(organized_df) for col in organized_df.columns)
 
     #Don't actually produce plot, just test function components
-    @patch("RSView.map_rsv.py.plot")
+    @patch("rsview.map_rsv.py.plot")
     def test_map_rsv(self, mock_show):
         #Test level='subtype'
         fig = self.run_map_rsv('subtype')

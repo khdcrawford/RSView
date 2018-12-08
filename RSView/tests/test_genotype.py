@@ -1,9 +1,9 @@
-"""Test RSView.genotype.py"""
+"""Test rsview.genotype.py"""
 import unittest
-import RSView.genotype as genotype
+import rsview.genotype as genotype
 
 STR = 'MQGHQNCASSG'
-CSVS = ['../data/RSVG_gb_metadata_0-5000.csv', 
+CSVS = ['../data/RSVG_gb_metadata_0-5000.csv',
         '../data/RSVG_gb_metadata_5000-10000.csv']
 
 class TestGenotyping(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestGenotyping(unittest.TestCase):
         """Test get correct output and error from genotype.hamming_distance"""
         str1 = STR
         str2 = str1.replace('Q', 'T')
-        self.assertEqual(genotype.hamming_distance(str1, str2), 
+        self.assertEqual(genotype.hamming_distance(str1, str2),
                          str1.count('Q'))
 
         with self.assertRaises(AssertionError):
@@ -26,12 +26,9 @@ class TestGenotyping(unittest.TestCase):
         """Test genotpe.merge_csvs gives right output df length"""
         self.assertEqual(len(genotype.merge_csvs(CSVS)), 10000)
 
-    
+
 
 
 
 if __name__ == '__main__':
     unittest.main()
-
-
-

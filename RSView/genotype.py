@@ -219,7 +219,7 @@ def main():
     if not os.path.isdir('{0}'.format(args['outdir'])):
         os.makedirs('{0}'.format(args['outdir']))
 
-    outfile = '{0}/RSVG_all_genotyped.csv'.format(outdir)
+    outfile = '{0}/RSVG_all_genotyped.csv'.format(args['outdir'])
     
     hd_threshold = args['threshold']
 
@@ -282,7 +282,7 @@ def main():
 
     # Make a clean df with relevant columns and save as `.csv`
     clean_df=rsv_df[['collection_date', 'country', 'subtype', 'genotype', 'G_seq']]
-    clean_df.to_csv(args['outfile'])
+    clean_df.to_csv(outfile)
 
 
 if __name__ == '__main__':

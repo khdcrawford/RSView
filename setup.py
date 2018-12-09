@@ -43,7 +43,7 @@ setup(
     license = 'MIT License',
     install_requires = ['biopython', 'plotly', 'pandas'],
     packages=find_packages(exclude=['docs', 'tests']),
-    package_dir = {'viralseq_mapping':'rsview'},
+    package_dir = {'RSView':'rsview'},
     scripts = ['rsview/seq_download.py',
                'rsview/genotype.py',
                'rsview/map_rsv.py',

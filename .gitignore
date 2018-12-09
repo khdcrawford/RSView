@@ -1,6 +1,6 @@
 *.pyc
 ._*
 .DS_Store
-RSView.egg-info
+rsview.egg-info
 build
 dist

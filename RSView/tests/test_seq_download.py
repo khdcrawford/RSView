@@ -1,7 +1,7 @@
-"""Test RSView.seq_download.py"""
+"""Test rsview.seq_download.py"""
 import unittest
 from Bio import Entrez
-import RSView.seq_download as seq_download
+import rsview.seq_download as seq_download
 
 # constants for testing
 EMAIL = 'test@uw.edu'
@@ -9,7 +9,7 @@ DB = 'nuccore'
 RETMAX = 5
 TERM = 'human respiratory syncytial virus G'
 
-TEST_DICTS = [{'organism': 'Human respiratory syncytial virus A'}, 
+TEST_DICTS = [{'organism': 'Human respiratory syncytial virus A'},
               {'organism': 'Human orthopneumovirus', 'strain': 'RSVB'},
               {'organism': 'Human paramyxovirus', 'note': 'subtype: A, '\
                'genotype: NA1'}]

@@ -10,7 +10,7 @@ import time
 import os
 import glob
 import subprocess
-import RSView.parsearguments
+import rsview.parsearguments
 
 from Bio import SeqIO
 
@@ -18,7 +18,7 @@ from Bio import SeqIO
 GT_A_LIST = ['ON1', 'GA1', 'GA2', 'GA3', 'GA5', 'GA6', 'GA7', 'NA1', 'NA2',
              'NA3', 'SAA1', 'SAA2']
 GT_B_LIST = ['BA', 'BA2', 'BA4', 'BA5', 'BA7', 'BA8', 'BA9', 'BA10', 'BA11',
-             'BA12', 'BA14', 'THB', 'SAB1', 'SAB3', 'SAB4', 'GB1', 'GB2', 
+             'BA12', 'BA14', 'THB', 'SAB1', 'SAB3', 'SAB4', 'GB1', 'GB2',
              'GB3', 'GB4','GB13', 'GB12']
 
 def hamming_distance(s1, s2):
@@ -46,7 +46,7 @@ def merge_csvs(csv_files):
 def seqstofastas(seqs_df, outfiles):
     """
     Take a dataframe containing sequence, subtype, and genotype info and
-    output specified `.fasta` files. 
+    output specified `.fasta` files.
 
     Args:
         `outfiles` (list)
@@ -83,31 +83,31 @@ def seqstofastas(seqs_df, outfiles):
 
 
 def align_seqs(infiles, outfiles):
-    """Use mafft to align RSV G sequences. 
+    """Use mafft to align RSV G sequences.
 
     Due to significant disparities in length, use a three step approach.
         1. Align long G sequences with known genotypes
         2. Add in all long G sequences using --add with --keeplength
         3. Add in short G sequences using --addfragments with --keeplength
-    
-    Expects to align 1st infile and ouput to first outfile, then add 2nd 
+
+    Expects to align 1st infile and ouput to first outfile, then add 2nd
     infile and output as 2nd outfile, and finally add 3rd infile and output
     as 3rd outfile.
-    
+
     Have this as a separate command, so is easy to not do for troubleshooting
     """
 
     assert len(infiles) == len(outfiles) == 3, 'Incorrect number of files '\
             'for i/o.'
 
-    subprocess.check_call('mafft --auto {0} > {1}'.format(infiles[0], 
+    subprocess.check_call('mafft --auto {0} > {1}'.format(infiles[0],
             outfiles[0]), shell=True)
 
     subprocess.check_call('mafft --add {0} --reorder --keeplength {1} > {2}'\
             .format(infiles[1], outfiles[0], outfiles[1]), shell=True)
 
     subprocess.check_call('mafft --addfragments {0} --reorder --6merpair '\
-            '--thread -1 --keeplength {1} > {2}'.format(infiles[2], 
+            '--thread -1 --keeplength {1} > {2}'.format(infiles[2],
             outfiles[1], outfiles[2]), shell=True)
 
 
@@ -144,7 +144,7 @@ def getrefseqs(ltyped_alignment, full_alignment):
                     added_gts[genotype] = [str(record.seq)]
                 else:
                     added_gts[genotype].append(str(record.seq))
-    
+
     # Pick added reference seq with least number of gaps. Must have < 60.
     for added_gt in added_gts:
         possible_refs = added_gts[added_gt]
@@ -155,7 +155,7 @@ def getrefseqs(ltyped_alignment, full_alignment):
     return gt_seqs
 
 def assign_gt(alignment, gt_refdict, hd_threshold):
-    """ 
+    """
 
     Return:
         `updated_gts` (list of tuples)
@@ -194,25 +194,25 @@ def assign_gt(alignment, gt_refdict, hd_threshold):
                               "discordant. Reset genotype to 'NaN'.".format(
                               record.name, new_gt, 'A'))
                         new_gt = 'NaN'
-            
+
                 updated_gts.append((record.name, new_gt))
-    
+
     return [updated_gts, mistyped]
 
 
 def main():
     """Align downloaded sequences, call genotypes, and return final df"""
 
-    parser = RSView.parsearguments.genotypeParser()
+    parser = rsview.parsearguments.genotypeParser()
     args = vars(parser.parse_args())
     prog = parser.prog
 
     print("\nExecuting {0} ({1}) in {2} at {3}.\n".format(
-            prog, RSView.__version__, os.getcwd(), time.asctime()))
+            prog, rsview.__version__, os.getcwd(), time.asctime()))
 
     files = [filename for filename in glob.glob('{0}*.csv'.format(
             args['inprefix']))]
-    
+
     if not os.path.isdir('{0}'.format(args['seqsdir'])):
         os.makedirs('{0}'.format(args['seqsdir']))
 
@@ -252,7 +252,7 @@ def main():
     seqs_files = [longtyped_fasta, long_fasta, short_fasta]
 
     seqstofastas(seqs, seqs_files)
-    
+
     # Establish files for alignments
     aligned_ltyped = '{0}/G_longtyped_aligned.fasta'.format(args['seqsdir'])
     aligned_long = '{0}/G_long_all_aligned.fasta'.format(args['seqsdir'])
@@ -260,9 +260,9 @@ def main():
 
     alignment_files = [aligned_ltyped, aligned_long, aligned_all]
 
-    # Make alignments 
+    # Make alignments
     align_seqs(seqs_files, alignment_files)
-    
+
     # Set reference seqs for each genotype
     gt_refs = getrefseqs(aligned_ltyped, aligned_all)
 
@@ -273,7 +273,7 @@ def main():
 
     print("\n{0} genotypes mistyped and reset to 'NaN'.".format(num_mistyped))
     print('{0} genotypes added.'.format(len(new_gts) - num_mistyped))
-    print("{0} seqs now genotyped.".format(already_genotyped + len(new_gts) 
+    print("{0} seqs now genotyped.".format(already_genotyped + len(new_gts)
             - num_mistyped))
 
     # Assign genotypes back to full dataframe

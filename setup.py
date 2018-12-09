@@ -1,4 +1,4 @@
-"""Setup script for ``RSView``."""
+"""Setup script for ``rsview``."""
 
 import sys
 from os import path
@@ -9,13 +9,13 @@ except ImportError:
 
 # Check that using Python 3
 if not (sys.version_info[0] == 3):
-    raise RuntimeError('RSView requires Python 3.x\n'
+    raise RuntimeError('rsview requires Python 3.x\n'
             'You are using Python {0}.{1}'.format(
             sys.version_info[0], sys.version_info[1]))
 
 # get metadata, which is specified in another file
 metadata = {}
-with open('./RSView/_metadata.py') as f:
+with open('./rsview/_metadata.py') as f:
     lines = [line for line in f.readlines() if not line.isspace()]
 for dataname in ['version', 'author', 'url']:
     for line in lines:
@@ -33,7 +33,7 @@ with open('README.md') as f:
 
 # main setup command
 setup(
-    name = 'RSView', 
+    name = 'rsview',
     version = metadata['version'],
     author = metadata['author'],
     url = metadata['url'],
@@ -43,12 +43,12 @@ setup(
     license = 'MIT License',
     install_requires = ['biopython', 'plotly', 'pandas'],
     packages=find_packages(exclude=['docs', 'tests']),
-    package_dir = {'viralseq_mapping':'RSView'},
-    scripts = ['RSView/seq_download.py',
-               'RSView/genotype.py',
-               'RSView/map_rsv.py',
-               'RSView/health_download.py',
-               'RSView/plot_rsv.py',
-               'RSView/plot_correlation.py'
+    package_dir = {'viralseq_mapping':'rsview'},
+    scripts = ['rsview/seq_download.py',
+               'rsview/genotype.py',
+               'rsview/map_rsv.py',
+               'rsview/health_download.py',
+               'rsview/plot_rsv.py',
+               'rsview/plot_correlation.py'
                 ]
 )

@@ -1,6 +1,6 @@
 """
 ===================================
-Python API for ``RSView``
+Python API for ``rsview``
 ===================================
 """
 from ._metadata import __version__

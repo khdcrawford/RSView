@@ -1,9 +1,9 @@
-"""Argument parser for `RSView`"""
+"""Argument parser for `rsview`"""
 
 import sys
 import os
 import argparse
-import RSView
+import rsview
 
 from argparse import RawTextHelpFormatter
 
@@ -25,7 +25,7 @@ def mapParser():
 			help="Specify whether the subtype or genotype of RSV sequences "\
 			"should be plotted")
 	parser.add_argument(
-			'--genotype-level', type=str, choices=['collapse', 'all'], 
+			'--genotype-level', type=str, choices=['collapse', 'all'],
 			default='collapse', help="Specify whether to plot all genotypes of "\
 			"RSV or collapse them into major clades")
 	parser.add_argument(
@@ -38,9 +38,9 @@ def seqParser():
 	parser = ArgumentParserNoArgHelp(
 			description='Downloads RSV G protein sequences & metadata from '\
 			'Genbank. This program is part of {0} (version {1}) written by '\
-			'{2}.'.format(RSView.__name__, RSView.__version__, 
-			RSView.__author__) + 'For documentation, see {0}'.format(
-			RSView.__url__), 
+			'{2}.'.format(rsview.__name__, rsview.__version__,
+			rsview.__author__) + 'For documentation, see {0}'.format(
+			rsview.__url__),
 			formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument('--email', required=True, type=str, help='User email'\
 			' for GenBank download.')
@@ -48,7 +48,7 @@ def seqParser():
 			'term(s) for downloading sequences from GenBank.')
 	parser.add_argument('--outdir', required=True, type=str, help='Directory'\
 			'for downloaded data.')
-	parser.add_argument('--outprefix', default='RSVG_gb_metadata', type=str, 
+	parser.add_argument('--outprefix', default='RSVG_gb_metadata', type=str,
 			help='Beginning of file name for output `.csv`. Suffix will '\
 			'specify number of sequences downloaded.')
 	parser.add_argument('--db', default='nuccore', type=str, help='Entrez'\
@@ -75,9 +75,9 @@ def genotypeParser():
 	parser = ArgumentParserNoArgHelp(
 			description='Given RSV G protein sequences & metadata downloaded '\
 			'from Genbank, fill in missing genotype data. This program is part '\
-			' of {0} (version {1}) written by {2}.'.format(RSView.__name__, 
-			RSView.__version__, RSView.__author__) + 'For documentation, see '
-			'{0}'.format(RSView.__url__), 
+			' of {0} (version {1}) written by {2}.'.format(rsview.__name__,
+			rsview.__version__, rsview.__author__) + 'For documentation, see '
+			'{0}'.format(rsview.__url__),
 			formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument('--inprefix', required=True, type=str, help="Prefix "\
 			"pointing to downloaded sequences and metadata files. --inprefix"\
@@ -88,14 +88,14 @@ def genotypeParser():
 			" for outputting generated fasta and alignment files.")
 	parser.add_argument('--outdir', required=True, type=str, help="Directory "\
 			"for outputting cleaned, genotyped `.csv`.")
-	parser.add_argument('--threshold', type=int, default=150, 
+	parser.add_argument('--threshold', type=int, default=150,
 			help="Threshold for how many sites must match in order to call a"\
 			" genotype.")
 	return parser
 
 def plotParser(allowedData=""):
 	parser = argparse.ArgumentParser(description="Plot data on child death "\
-			"rates from acute respiratory infection", 
+			"rates from acute respiratory infection",
 			formatter_class=RawTextHelpFormatter)
 	parser.add_argument(
 			'level', type=str, choices=['all', 'country'], default='all',
@@ -103,7 +103,7 @@ def plotParser(allowedData=""):
 			"specific country")
 	parser.add_argument(
 			'data_type', type=str, choices=[' nnd ', ' pnd ', ' neo9 ',
-			' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ', 
+			' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ',
 			'fneo9', 'fpost9', 'fufive9'], help="Specify which category of "\
 			"data to plot:\n" + allowedData)
 	parser.add_argument(
@@ -120,7 +120,7 @@ def plotParser(allowedData=""):
 
 def correlationParser(allowedData=""):
 	parser = argparse.ArgumentParser(description="Plot data on child death "\
-		"rates from acute respiratory infection", 
+		"rates from acute respiratory infection",
 		formatter_class=RawTextHelpFormatter)
 	parser.add_argument(
 		'level', type=str, choices=['all', 'year'], default='all',
@@ -128,10 +128,7 @@ def correlationParser(allowedData=""):
 		"specific country")
 	parser.add_argument(
 		'data_type', type=str, choices=[' nnd ', ' pnd ', ' neo9 ',
-		' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ', 
+		' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ',
 		'fneo9', 'fpost9', 'fufive9'], help="Specify which category of "\
 		"data to plot:\n" + allowedData)
 	return parser
-
-
-

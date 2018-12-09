@@ -34,7 +34,7 @@ class TestMapRsv(unittest.TestCase):
         organized_df = self.run_count_types('subtype')
 
         self.assertEqual(list(organized_df.columns), ['country', 'subtype', 'year', 'count',
-                         'country_code', 'Longitude', 'Latitude', 'adj_lon', 'adj_lat'])
+                         'country_code', 'Longitude', 'Latitude', 'under_five_deaths', 'adj_lon', 'adj_lat'])
         self.assertTrue(len(organized_df[col].notnull()) == len(organized_df) for
                         col in organized_df.columns)
 
@@ -43,7 +43,7 @@ class TestMapRsv(unittest.TestCase):
 
         self.assertEqual(list(organized_df.columns), ['country', 'subtype',
                          'genotype_group', 'year', 'count', 'country_code', 'Longitude',
-                         'Latitude', 'adj_lon', 'adj_lat'])
+                         'Latitude', 'under_five_deaths', 'adj_lon', 'adj_lat'])
         self.assertTrue(len(organized_df[col].notnull()) == len(organized_df) for
                         col in organized_df.columns)
 
@@ -52,7 +52,7 @@ class TestMapRsv(unittest.TestCase):
 
         self.assertEqual(list(organized_df.columns), ['country', 'subtype',
                          'genotype', 'year', 'count', 'country_code', 'Longitude',
-                         'Latitude', 'adj_lon', 'adj_lat'])
+                         'Latitude', 'under_five_deaths', 'adj_lon', 'adj_lat'])
         self.assertTrue(len(organized_df[col].notnull()) ==
                         len(organized_df) for col in organized_df.columns)
 

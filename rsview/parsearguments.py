@@ -30,7 +30,8 @@ def mapParser():
 			"RSV or collapse them into major clades")
 	parser.add_argument(
 			'--years', default=[1990,2018],
-			help="Specify a range of years to plot")
+			help="Specify a range of years to plot. Example: [1990,2018]. If 'all'"\
+			"is specified, all years for which there are data points will be plotted")
 	return parser
 
 def seqParser():

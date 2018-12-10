@@ -13,8 +13,7 @@ import rsview.parsearguments
 
 
 JITTER_DICT = {'A':1.0, 'B':-1.0}
-DATAFILES = [filename for filename in glob.glob('./data/RSVG_gb_metadata*.csv')]
-HEALTHFILE = './data/health_data_all.csv'
+HEALTHFILE = '/health_data_all.csv'
 GENOTYPE_DICT = {'GA2':'GA', 'GA5':'GA', 'GB12':'GB', 'GB13':'GB', 'GA3':'GA', 'NA1':'NA',
                  'NA2':'NA', 'ON1':'ON', 'SAA1':'SAA', 'BA':'BA', 'BA10':'BA', 'BA9':'BA',
                  'GB3':'GB', 'SAB1':'SAB', 'SAB3':'SAB', 'SAB4':'SAB', 'NA3':'NA', 'GB2':'GB',
@@ -23,13 +22,16 @@ GENOTYPE_DICT = {'GA2':'GA', 'GA5':'GA', 'GB12':'GB', 'GB13':'GB', 'GA3':'GA', '
                  'BA4':'BA', 'BA5':'BA', 'BA12':'BA', 'GB1':'GB', 'BA08':'BA', 'BA09':'BA',
                  'BA IV':'BA', 'THB':'TH'}
 
-def organize_data(datafiles, genotype_dict):
+def organize_data(datadir, genotype_dict):
     """
     Load .csv files containing RSV sequence data and extract relevant columns. Ensure country
     names to conform to standard names used to retrieve latitude and longitude data. Return a
     DataFrame where each sequence is row containing country, genotype, subtype, and collection date
     information.
     """
+
+    #Find datafiles in user-specified directory
+    datafiles = [filename for filename in glob.glob(str(datadir)+'/RSVG_gb_metadata*.csv')]
 
     #Return error if data files are not present
     for filename in datafiles:
@@ -75,7 +77,7 @@ def organize_data(datafiles, genotype_dict):
     return rsv_df
 
 
-def count_types(rsv_df, jitter_dict, level, genotype_level='collapse'):
+def count_types(rsv_df, jitter_dict, level, datadir, genotype_level='collapse'):
     """
     Restructure the DataFrame so that each row indicates the total number of RSV sequences
     found in each country, each year, for each subtype or genotype (specified by the level argument)
@@ -84,11 +86,11 @@ def count_types(rsv_df, jitter_dict, level, genotype_level='collapse'):
     #use lat and long so datapoints can be jittered to show multiple subtypes
     #lat and long data from https://worldmap.harvard.edu/data/geonode:country_centroids_az8
 
-    lat_lon = pd.read_csv('./data/country_centroids.csv',
+    lat_lon = pd.read_csv(str(datadir)+'/country_centroids.csv',
                           usecols=['name', 'brk_a3', 'Longitude', 'Latitude']
                           ).rename(columns={'name':'country', 'brk_a3': 'country_code'})
 
-    health_data = pd.read_csv(HEALTHFILE, usecols=['country', 'year',
+    health_data = pd.read_csv(str(datadir)+HEALTHFILE, usecols=['country', 'year',
                               'fufive9']).rename(columns={'fufive9':'under_five_deaths'})
 
     #Level specified by required argument
@@ -269,12 +271,12 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2018]):
     py.plot(fig)
     return fig
 
-def main(level, genotype_level, years):
+def main(level, datadir, genotype_level, years):
     """
     Run organize_data, count_types, map_rsv
     """
-    rsv_df = organize_data(DATAFILES, GENOTYPE_DICT)
-    organized_df = count_types(rsv_df, JITTER_DICT, level, genotype_level=genotype_level)
+    rsv_df = organize_data(datadir, GENOTYPE_DICT)
+    organized_df = count_types(rsv_df, JITTER_DICT, level, datadir, genotype_level=genotype_level)
     map_rsv(organized_df, level, genotype_level=genotype_level, years=years)
 
 if __name__ == "__main__":
@@ -282,4 +284,4 @@ if __name__ == "__main__":
     parser = rsview.parsearguments.mapParser()
     args = parser.parse_args()
 
-    main(args.level, genotype_level=args.genotype_level, years=args.years)
+    main(args.level, args.datadir, genotype_level=args.genotype_level, years=args.years)

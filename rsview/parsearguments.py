@@ -25,6 +25,9 @@ def mapParser():
 			help="Specify whether the subtype or genotype of RSV sequences "\
 			"should be plotted")
 	parser.add_argument(
+			'datadir', type=str,
+			help="Specify the directory that contains seq_download.py output")
+	parser.add_argument(
 			'--genotype-level', type=str, choices=['collapse', 'all'],
 			default='collapse', help="Specify whether to plot all genotypes of "\
 			"RSV or collapse them into major clades")

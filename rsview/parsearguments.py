@@ -2,9 +2,10 @@
 
 import sys
 import argparse
-from argparse import RawTextHelpFormatter
-import rsview
 
+from argparse import RawTextHelpFormatter
+
+import rsview
 
 class ArgumentParserNoArgHelp(argparse.ArgumentParser):
     """Like *argparse.ArgumentParser*, but prints help when no arguments."""
@@ -15,25 +16,21 @@ class ArgumentParserNoArgHelp(argparse.ArgumentParser):
         sys.exit(2)
 
 
-def mapParser():
+def map_parser():
     """Returns argument parser for `map_rsv.py`"""
     parser = argparse.ArgumentParser(description="Plot global distribution "\
-            "of RSV")
-    parser.add_argument(
-            'level', type=str, choices=['subtype', 'genotype'],
-            help="Specify whether the subtype or genotype of RSV sequences "\
-            "should be plotted")
-    parser.add_argument(
-            'datadir', type=str,
-            help="Specify the directory that contains seq_download.py output")
-    parser.add_argument(
-            '--genotype-level', type=str, choices=['collapse', 'all'],
-            default='collapse', help="Specify whether to plot all genotypes of "\
-            "RSV or collapse them into major clades")
-    parser.add_argument(
-            '--years', default=[1990,2018],
-            help="Specify a range of years to plot. Example: [1990,2018]. If 'all'"\
-            "is specified, all years for which there are data points will be plotted")
+                                     "of RSV")
+    parser.add_argument('level', type=str, choices=['subtype', 'genotype'],
+                        help="Specify whether the subtype or genotype of RSV sequences "\
+                        "should be plotted")
+    parser.add_argument('datadir', type=str,
+                        help="Specify the directory that contains seq_download.py output")
+    parser.add_argument('--genotype-level', type=str, choices=['collapse', 'all'],
+                        default='collapse', help="Specify whether to plot all genotypes of "\
+                        "RSV or collapse them into major clades")
+    parser.add_argument('--years', default=[1990, 2018],
+                        help="Specify a range of years to plot. Example: [1990, 2018]. If 'all'"\
+                        "is specified, all years for which there are data points will be plotted")
     return parser
 
 def seq_parser():

@@ -282,7 +282,7 @@ def main(level, datadir, genotype_level, years):
 
 if __name__ == "__main__":
 
-    PARSER = rsview.parsearguments.mapParser()
+    PARSER = rsview.parsearguments.map_parser()
     ARGS = PARSER.parse_args()
 
     main(ARGS.level, ARGS.datadir, genotype_level=ARGS.genotype_level, years=ARGS.years)

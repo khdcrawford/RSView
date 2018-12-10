@@ -52,6 +52,10 @@ def gethandle(database, ids, firstseq, dload_size, rettype, retmode):
             index of first sequence to download
         `dload_size` (int)
         	number of seqs to download at a time
+        `rettype` (str)
+        	type of file downloaded from GenBank. default: 'gb'
+        `retmode` (str)
+        	format of output from GenBank download. default: `xml`
 
     Returns:
         `handle`

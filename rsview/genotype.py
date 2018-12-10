@@ -22,18 +22,22 @@ GT_B_LIST = ['BA', 'BA2', 'BA4', 'BA5', 'BA7', 'BA8', 'BA9', 'BA10', 'BA11',
              'GB3', 'GB4', 'GB13', 'GB12']
 
 def hamming_distance(seq1, seq2):
-    """Return the Hamming distance between equal-length sequences
-    
-    Args:
-
-
-    """
+    """Return the Hamming distance between equal-length sequences."""
     assert len(seq1) == len(seq2), "Undefined for sequences of unequal length"
     return sum(site1 != site2 for site1, site2 in zip(seq1, seq2))
 
 
 def merge_csvs(csv_files):
-    """Merge given *csv_files* into one dataframe"""
+    """Merge given *csv_files* into one dataframe.
+
+    Args:
+        `csv_files` (list)
+            list of .csv files to merge into dataframe
+            
+    Returns:
+        `full_df` (dataframe)
+            pandas dataframe containing data concatenated from csv_files
+    """
     file_frames = []
     for file in csv_files:
         if not os.path.isfile(file):
@@ -50,8 +54,8 @@ def merge_csvs(csv_files):
 
 def seqstofastas(seqs_df, outfiles):
     """
-    Take a dataframe containing sequence, subtype, and genotype info and
-    output specified `.fasta` files.
+    Takes a dataframe containing sequence, subtype, and genotype info and
+    outputs specified `.fasta` files.
 
     Args:
         `outfiles` (list)
@@ -61,7 +65,7 @@ def seqstofastas(seqs_df, outfiles):
                 3. All short G seqs
 
         `seqs_df` (dataframe)
-
+            pandas dataframe containing sequence, subtype, and genotype info
     """
     assert len(outfiles) == 3, 'Unexpected number of files to output.'
 
@@ -118,7 +122,25 @@ def align_seqs(infiles, outfiles):
 
 
 def getrefseqs(ltyped_alignment, full_alignment):
-    """Get """
+    """From alignments, finds the longest sequences with genotype info.
+    
+    Args:
+        `ltyped_alignment` (.fasta alignment)
+            Alignment of long sequences with genotypes.
+            Try to assign reference genotype sequences from these seqs first.
+        
+        `full_alignment` (.fasta alignment)
+            Alignment of all sequences of interest.
+            Look through these sequences for genotypes not found in the
+            `ltyped_alignment` and assign them a reference sequence if there
+            is a sequence of sufficient length (< 60 gaps compared to full).
+    
+    Returns:
+        `gt_seqs` (dict)
+            Dictionary of a reference sequence for each genotype already
+            called in the data.
+
+    """
     gt_seqs = {}
     # Set reference seqs with long seqs first
     for record in SeqIO.parse(ltyped_alignment, 'fasta'):
@@ -162,10 +184,33 @@ def getrefseqs(ltyped_alignment, full_alignment):
 
 def assign_gt(alignment, gt_refdict, hd_threshold):
     """
+    Assign a genotype to a non-genotyped sequence as long as the match
+    meets a certain hamming distance threshold.
+    
+    Args:
+        `alignment` (.fasta alignment)
+            Alignment of all sequences (genotyped and non) to analyze.
 
-    Return:
+        `gt_refdict` (dict)
+            Dictionary of genotypes and reference sequences
+
+        `hd_threshold` (int)
+            Hamming distance threshold that sets the maximum number of 
+            mismatches allowed between a sequence and the most similar 
+            genotype reference sequence. If the minimum hamming distance
+            between a sequence and its most similar reference sequence is 
+            greater than `hd_threshold`, the genotype will remain 'NaN'.
+
+    Returns:
         `updated_gts` (list of tuples)
             List of df index and new genotype for sequences with new gt
+
+        `mistyped` (int)
+            Number of sequences that were mistyped using this genotyping 
+            method. Being mistyped means the method assigned them a 
+            genotype that did not agree with the downloaded subtype. 
+            These genotypes are reset to 'NaN'.
+
     """
 
     updated_gts = []

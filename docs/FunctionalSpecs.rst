@@ -1,6 +1,9 @@
-## Functional Specifications
- 
-### Background
+=========================
+Functional Specifications
+=========================
+
+Background
+==========
 
 Respiratory syncytial virus (RSV) is a common respiratory virus that, in healthy adults, usually causes an illness similar to the common cold. However, in infants and the elderly, RSV infection causes severe disease. RSV is the leading cause of pneumonia in infants less than one year of age and is a leading cause of hospitalization due to acute respiratory tract infections in both infants and young children. 
 
@@ -10,7 +13,8 @@ Furthermore, it is known that for some respiratory viruses, such as rhinovirus, 
 
 Together our project, `RSView`, will provide an important resource for better understanding the global circulation dynamics of RSV and investigating the effects of genotype on disease severity. We recognize that this is very much a "first-pass" analysis, but believe these analyses and, especially, this framework for examining RSV (which is modeled off of the nextstrain.org platform developed by Trevor Bedford and Richard Neher) could prove quite useful for the field.
 
-### Data Sources
+Data Sources
+============
 
 RSView utilizes publicly available viral sequence data and metadata from
 [GenBank](https://www.ncbi.nlm.nih.gov/genbank/). This data is downloaded in .fasta format. Specifically, the genetic
@@ -20,9 +24,11 @@ childhood deaths due to pneumonia is taken from [UNICEF](https://data.unicef.org
 data is available in tabular format.
 
 
-## User Profile 
+User Profile 
+============
 
-### Target user description
+Target user description
+-----------------------
 
 RSView is intended to be used by clinicians and laboratory scientists.
 
@@ -39,37 +45,43 @@ RSView's interactive map as a preliminary tool for understanding and visualizing
 related viruses may be interested in adapting RSView to visualize the global and temporal distribution of their virus of
 interest. 
 
-### Required programming background of users
+Required programming background of users
+----------------------------------------
 
 RSView is an analysis of the global distribution of RSV subtypes intended for laboratory scientists and clinicians. In
 order to access the RSView, users will navigate to the Github repository where it is stored
-(https://github.com/khdusenbury/viralseq_mapping). Though some of the intended users will have a programming background,
+(https://github.com/khdusenbury/RSView). Though some of the intended users will have a programming background,
 this is not necessary in order for the user to understand or interact with the analysis. Users that are fluent in Python
 will be able to view the code used to generate the interactive subtype distribution map, plots of correlations between
 RSV subtypes and childhood deaths, and other analyses. 
 
-## Use Cases
+Use Cases
+=========
 
-### Use Case 1: Analyze global distribution of RSV genotypes or subtypes
+Use Case 1: Analyze global distribution of RSV genotypes or subtypes
+--------------------------------------------------------------------
 
-Using map_rsv.py, the user can generate a world map highlighting which genotypes and subtypes were found in different countries and their prevalence, as shown by larger circles to represent where more sequences have been recorded. Using the optional 'years' argument or the slider found below the map, the user can highlight which genotypes or subtypes were more prevalent in a given time period or follow their shift in frequency and location over time.
+Using `map_rsv.py`, the user can generate a world map highlighting which genotypes and subtypes were found in different countries and their prevalence, as shown by larger circles to represent where more sequences have been recorded. Using the optional 'years' argument or the slider found below the map, the user can highlight which genotypes or subtypes were more prevalent in a given time period or follow their shift in frequency and location over time.
 
-![alt text](../examples/maprsv_2011.png)
+    .. figure:: ../examples/maprsv_2011.png
 
-### Use Case 2: Analyze health impact of acute respiratory infections around the world
+Use Case 2: Analyze health impact of acute respiratory infections around the world
+----------------------------------------------------------------------------------
 
-Using plot_rsv.py, the user can plot different metrics measuring the differential health impact of acute respiratory infections on children around the world. If they are interested in seeing how a particular country compares to the other countries in this dataset, they can use the optional 'highlight_country' to highlight their country of interest on the graph.
+Using `plot_rsv.py`, the user can plot different metrics measuring the differential health impact of acute respiratory infections on children around the world. If they are interested in seeing how a particular country compares to the other countries in this dataset, they can use the optional 'highlight_country' to highlight their country of interest on the graph.
 
-![alt text](../examples/rsvplot_highlight.png)
+    .. figure:: ../examples/rsvplot_highlight.png
 
-### Use Case 3: Analyze health impact trends in a specific country over time
+Use Case 3: Analyze health impact trends in a specific country over time
+------------------------------------------------------------------------
 
-If the user would like to examine health trends in their country of interest more specifically, plot_rsv.py can also be used to plot the trend in health metrics for that country from 2000-2016.
+If the user would like to examine health trends in their country of interest more specifically, `plot_rsv.py` can also be used to plot the trend in health metrics for that country from 2000-2016.
 
-![alt text](../examples/rsvplot_time.png)
+    .. figure:: ../examples/rsvplot_time.png
 
-### Use Case 4: Analyze the correlation between RSV subtype prevalence and health impact
+Use Case 4: Analyze the correlation between RSV subtype prevalence and health impact
+------------------------------------------------------------------------------------
 
-Using plot_correlation.py, the user can examine the relationship between the health impacts of acute respiratory infections and the prevalence of RSV subtype A or B in that region. This can additionally be used to plot the shift in prevalence between subtypes over time and look for potential correlation between these shifts and a change in death rates.
+Using `plot_correlation.py`, the user can examine the relationship between the health impacts of acute respiratory infections and the prevalence of RSV subtype A or B in that region. This can additionally be used to plot the shift in prevalence between subtypes over time and look for potential correlation between these shifts and a change in death rates.
 
-![alt text](../examples/correlation_year.png)
+    .. figure:: ../examples/correlation_year.png

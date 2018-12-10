@@ -40,6 +40,8 @@ def getids(database, retmax, term):
 
 def gethandle(database, ids, firstseq, dload_size, rettype, retmode):
     """Download Entrez 'handle' for downloading seqs of interest
+       
+    See `Entrez.efetch` help for additional help.
 
     Args:
         `database` (str)
@@ -49,10 +51,9 @@ def gethandle(database, ids, firstseq, dload_size, rettype, retmode):
         `firstseq` (int)
             index of first sequence to download
         `dload_size` (int)
+        	number of seqs to download at a time
 
-        See `Entrez.efetch` help for help.
-
-    Return:
+    Returns:
         `handle`
             Entrez object containing sequence information
     """
@@ -65,10 +66,12 @@ def find_subtype(meta_dict):
     """Find subtype from dictionary of sequence metadata.
 
     Args:
-        meta_dict (dict): dictionary of metadata downloaded from genbank
+        `meta_dict` (dict)
+        	dictionary of metadata downloaded from genbank
 
     Returns:
-        subtype (str): RSV subtype as one letter string, 'A' or 'B'.
+        `subtype` (str)
+        	RSV subtype as one letter string, 'A' or 'B'.
     """
 
     subtype = ''

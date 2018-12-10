@@ -1,8 +1,8 @@
 """Assign RSV G sequences genotypes.
 
 This program relies on some seqs already being genotyped. It will
-not add sequences to a genotype that does not already have a high
-quality (< 60 gaps in the alignment) sequence in the input data.
+only add sequences to a genotype that already has a high quality
+(< 60 gaps in the alignment) sequence in the input data.
 """
 
 import time
@@ -22,7 +22,12 @@ GT_B_LIST = ['BA', 'BA2', 'BA4', 'BA5', 'BA7', 'BA8', 'BA9', 'BA10', 'BA11',
              'GB3', 'GB4', 'GB13', 'GB12']
 
 def hamming_distance(seq1, seq2):
-    """Return the Hamming distance between equal-length sequences"""
+    """Return the Hamming distance between equal-length sequences
+    
+    Args:
+
+
+    """
     assert len(seq1) == len(seq2), "Undefined for sequences of unequal length"
     return sum(site1 != site2 for site1, site2 in zip(seq1, seq2))
 

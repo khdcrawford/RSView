@@ -59,6 +59,7 @@ To replicate our analyses:
 * run `map_rsv.py` and/or `plot_rsv.py` with appropriate arguments.
 
 ## Repository structure
+```bash
 RSView/
 ├── LICENSE
 ├── README.md
@@ -108,3 +109,4 @@ RSView/
 │       ├── test_map_rsv.py
 │       └── test_seq_download.py
 └── setup.py
+```

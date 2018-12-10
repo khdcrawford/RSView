@@ -4,27 +4,27 @@ This program relies on some seqs already being genotyped. It will
 not add sequences to a genotype that does not already have a high
 quality (< 60 gaps in the alignment) sequence in the input data.
 """
-import pandas as pd
-import numpy as np
+
 import time
 import os
 import glob
 import subprocess
+import pandas as pd
+from Bio import SeqIO
 import rsview.parsearguments
 
-from Bio import SeqIO
 
 #GT_A and GT_B lists based on genotypes already known to be present.
 GT_A_LIST = ['ON1', 'GA1', 'GA2', 'GA3', 'GA5', 'GA6', 'GA7', 'NA1', 'NA2',
              'NA3', 'SAA1', 'SAA2']
 GT_B_LIST = ['BA', 'BA2', 'BA4', 'BA5', 'BA7', 'BA8', 'BA9', 'BA10', 'BA11',
              'BA12', 'BA14', 'THB', 'SAB1', 'SAB3', 'SAB4', 'GB1', 'GB2',
-             'GB3', 'GB4','GB13', 'GB12']
+             'GB3', 'GB4', 'GB13', 'GB12']
 
-def hamming_distance(s1, s2):
+def hamming_distance(seq1, seq2):
     """Return the Hamming distance between equal-length sequences"""
-    assert len(s1) == len(s2), "Undefined for sequences of unequal length"
-    return sum(site1 != site2 for site1, site2 in zip(s1, s2))
+    assert len(seq1) == len(seq2), "Undefined for sequences of unequal length"
+    return sum(site1 != site2 for site1, site2 in zip(seq1, seq2))
 
 
 def merge_csvs(csv_files):
@@ -34,7 +34,7 @@ def merge_csvs(csv_files):
         if not os.path.isfile(file):
             raise ValueError('Sequence data not downloaded. Run '\
                     '`seq_download.py`.')
-        file_df=pd.read_csv(file)
+        file_df = pd.read_csv(file)
         file_frames.append(file_df)
 
     full_df = pd.concat(file_frames, ignore_index=True, sort=False)
@@ -54,6 +54,9 @@ def seqstofastas(seqs_df, outfiles):
                 1. Long G seqs already genotyped
                 2. Long G seqs not yet genotyped
                 3. All short G seqs
+
+        `seqs_df` (dataframe)
+
     """
     assert len(outfiles) == 3, 'Unexpected number of files to output.'
 
@@ -65,12 +68,12 @@ def seqstofastas(seqs_df, outfiles):
          open(l_fasta, 'w') as long_nogt, \
          open(s_fasta, 'w') as short:
         for i in range(len(seqs_df)):
-            st = seqs_df.at[i, 'subtype']
-            gt = seqs_df.at[i, 'genotype']
-            header = '>{0} {1} {2}\n'.format(i, st, gt)
+            stype = seqs_df.at[i, 'subtype']
+            gtype = seqs_df.at[i, 'genotype']
+            header = '>{0} {1} {2}\n'.format(i, stype, gtype)
             seq = seqs_df.at[i, 'G_seq']
             if seq != 'NaN':
-                if gt != 'NaN':
+                if gtype != 'NaN':
                     if len(seq) > 290:
                         longtyped.write('{0}{1}\n'.format(header, seq))
                     else:
@@ -93,8 +96,6 @@ def align_seqs(infiles, outfiles):
     Expects to align 1st infile and ouput to first outfile, then add 2nd
     infile and output as 2nd outfile, and finally add 3rd infile and output
     as 3rd outfile.
-
-    Have this as a separate command, so is easy to not do for troubleshooting
     """
 
     assert len(infiles) == len(outfiles) == 3, 'Incorrect number of files '\
@@ -112,7 +113,7 @@ def align_seqs(infiles, outfiles):
 
 
 def getrefseqs(ltyped_alignment, full_alignment):
-    """"""
+    """Get """
     gt_seqs = {}
     # Set reference seqs with long seqs first
     for record in SeqIO.parse(ltyped_alignment, 'fasta'):
@@ -173,15 +174,15 @@ def assign_gt(alignment, gt_refdict, hd_threshold):
         # only add genotypes for seqs with subtypes so can check concordance
         if genotype == 'NaN' and subtype != 'NaN':
             gt_hds = {}
-            for gt in gt_refdict:
-                gt_ref = gt_refdict[gt]
-                gt_hds[gt] = hamming_distance(gt_ref, str(record.seq))
+            for gtype in gt_refdict:
+                gt_ref = gt_refdict[gtype]
+                gt_hds[gtype] = hamming_distance(gt_ref, str(record.seq))
             # At least *hd_threshold* sites must match to call genotype.
             if min(gt_hds.values()) < (len(record.seq) - hd_threshold):
                 new_gt = min(gt_hds, key=gt_hds.get)
                 if record.description.split(' ')[1] == 'B':
                     if new_gt not in GT_B_LIST:
-                        mistyped+=1
+                        mistyped += 1
                         print("\nSeq: {0}. Genotype {1} and subtype {2} "\
                               "discordant. Reset genotype to 'NaN'.".format(
                               record.name, new_gt, 'B'))
@@ -189,7 +190,7 @@ def assign_gt(alignment, gt_refdict, hd_threshold):
 
                 elif record.description.split(' ')[1] == 'A':
                     if new_gt not in GT_A_LIST:
-                        mistyped+=1
+                        mistyped += 1
                         print("\nSeq: {0}. Genotype {1} and subtype {2} "\
                               "discordant. Reset genotype to 'NaN'.".format(
                               record.name, new_gt, 'A'))
@@ -203,7 +204,7 @@ def assign_gt(alignment, gt_refdict, hd_threshold):
 def main():
     """Align downloaded sequences, call genotypes, and return final df"""
 
-    parser = rsview.parsearguments.genotypeParser()
+    parser = rsview.parsearguments.genotype_parser()
     args = vars(parser.parse_args())
     prog = parser.prog
 
@@ -220,7 +221,7 @@ def main():
         os.makedirs('{0}'.format(args['outdir']))
 
     outfile = '{0}/RSVG_all_genotyped.csv'.format(args['outdir'])
-    
+
     hd_threshold = args['threshold']
 
     print('Input files: {0}'.format(files))
@@ -230,12 +231,12 @@ def main():
         if not os.path.isfile(file):
             raise ValueError('Sequence data not downloaded. Run '\
                     '`seq_download.py`.')
-        file_df=pd.read_csv(file)
+        file_df = pd.read_csv(file)
         file_frames.append(file_df)
 
     rsv_df = merge_csvs(files)
 
-    seqs=rsv_df[['G_seq', 'genotype', 'subtype']]
+    seqs = rsv_df[['G_seq', 'genotype', 'subtype']]
 
     already_genotyped = sum(seqs['genotype'].value_counts())
 
@@ -281,13 +282,14 @@ def main():
         rsv_df.loc[int(new_gt[0]), 'genotype'] = new_gt[1]
 
     # Make a clean df with relevant columns and save as `.csv`
-    clean_df=rsv_df[['collection_date', 'country', 'subtype', 'genotype', 'G_seq']]
+    clean_df = rsv_df[['collection_date', 'country', 'subtype', 'genotype', \
+                       'G_seq']]
     clean_df.to_csv(outfile)
 
 
 if __name__ == '__main__':
-    start_time = time.time()
+    START_TIME = time.time()
     main()
-    end_time = time.time()
+    END_TIME = time.time()
     print('Finished at {0}. Took {1:.3f} minutes to run.'.format(
-            time.asctime(), (end_time - start_time)/60))
+            time.asctime(), (END_TIME - START_TIME)/60))

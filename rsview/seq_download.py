@@ -188,7 +188,7 @@ def makedf(handle):
 def main():
     """Download sequence data and return dataframe"""
 
-    parser = rsview.parsearguments.seqParser()
+    parser = rsview.parsearguments.seq_parser()
     args = vars(parser.parse_args())
     prog = parser.prog
 

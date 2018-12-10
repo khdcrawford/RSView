@@ -11,7 +11,7 @@ Similar to other respiratory viruses, such as influenza, RSV circulates globally
 
 Furthermore, it is known that for some respiratory viruses, such as rhinovirus, different subtypes or genotypes have different clinical severities. As such, we aim to examine if the subtype and genotype of RSV circulating in a particular location correlates with disease severity as determined by the number of children under 5 years old that die due to acute respiratory tract infection (ARTI). We realize that using deaths due to ARTI in children under 5 is an imperfect estimate of RSV disease burden, but believe this to be an appropriate surrogate due to the high RSV disease burden in this age group. Any large effects of genotype on disease severity should be noticeable with this coarse grain analysis.
 
-Together our project, `RSView`, will provide an important resource for better understanding the global circulation dynamics of RSV and investigating the effects of genotype on disease severity. We recognize that this is very much a "first-pass" analysis, but believe these analyses and, especially, this framework for examining RSV (which is modeled off of the nextstrain.org platform developed by Trevor Bedford and Richard Neher) could prove quite useful for the field.
+Together our project, ``RSView``, will provide an important resource for better understanding the global circulation dynamics of RSV and investigating the effects of genotype on disease severity. We recognize that this is very much a "first-pass" analysis, but believe these analyses and, especially, this framework for examining RSV (which is modeled off of the nextstrain.org platform developed by Trevor Bedford and Richard Neher) could prove quite useful for the field.
 
 Data Sources
 ============

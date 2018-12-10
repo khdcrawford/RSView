@@ -12,6 +12,7 @@ Welcome to RSView's documentation!
    
    FunctionalSpecs
    ComponentSpecs   
+   Installation
    health_download
    seq_download
    genotype

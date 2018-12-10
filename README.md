@@ -15,12 +15,12 @@ Similar to other respiratory viruses, such as influenza, RSV circulates globally
 
 Furthermore, it is known that for some respiratory viruses, such as rhinovirus, different subtypes or genotypes have different clinical severities. As such, we aim to examine if the subtype and genotype of RSV circulating in a particular location correlates with disease severity as determined by the number of children under 5 years old that die due to acute respiratory tract infection (ARTI). We realize that using deaths due to ARTI in children under 5 is an imperfect estimate of RSV disease burden, but believe this to be an appropriate surrogate due to the high RSV disease burden in this age group. Any large effects of genotype on disease severity should be noticeable with this coarse grain analysis.
 
-Together our project, `RSView`, will provide an important resource for better understanding the global circulation dynamics of RSV and investigating the effects of genotype on disease severity. We recognize that this is very much a "first-pass" analysis, but believe these analyses and, especially, this framework for examining RSV (which is modeled off of the nextstrain.org platform developed by Trevor Bedford and Richard Neher) could prove quite useful for the field.
+Together our project, ``RSView``, will provide an important resource for better understanding the global circulation dynamics of RSV and investigating the effects of genotype on disease severity. We recognize that this is very much a "first-pass" analysis, but believe these analyses and, especially, this framework for examining RSV (which is modeled off of the nextstrain.org platform developed by Trevor Bedford and Richard Neher) could prove quite useful for the field.
 
 
 ## Directory Structure
 
-### RSView
+### rsview
 This directory includes code to download and prepare both the genotype and health data, as well as code to generate functional plots for analyzing the datasets both individually and as an integrated dataset.
 
 - data: includes the raw health data set as well as downloaded RSV genotype data sets
@@ -31,22 +31,24 @@ This directory includes code to download and prepare both the genotype and healt
 This contains a jupyter notebook with example usage of the code containing in RSView as well as several graphs generated from these datasets
 
 ### docs
-This includes component and functional specifications, including a description of expected use cases
+This includes component and functional specifications, including a description of expected use cases. 
+
+The documentation can be rendered into .html format. Follow the instructions in the README.rst rile in the docs directory.
 
 
 ## Installation
 
-To install and run `RSView` perform the following steps:
+To install and run `rsview` perform the following steps:
 
-* clone the repo: git clone https://github.com/khdusenbury/viralseq_mapping.git
+* clone the repo: git clone https://github.com/khdusenbury/RSView.git
 
 * create and activate the conda environment in the `environment.yml`:
     * `conda env create -f environment.yml`
     * `source activate rsview`
 
-* install `RSView` by running `python setup.py install` within the cloned `viralseq_mapping` directory
+* install `rsview` by running `python setup.py install` within the cloned ``RSView`` directory
 
-* create a plot.ly account [here](https://plot.ly/). Follow [these](https://plot.ly/python/getting-started/#initialization-for-online-plotting) the instructions for adding your plot.ly API key to your ~/.plotly/.credentials file
+* create a plot.ly account [here](https://plot.ly/). Follow [these](https://plot.ly/python/getting-started/#initialization-for-online-plotting) instructions for adding your plot.ly API key to your `~/.plotly/.credentials` file
 
 Modules can then be run based on user needs.
 

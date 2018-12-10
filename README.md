@@ -46,6 +46,8 @@ To install and run `RSView` perform the following steps:
 
 * install `RSView` by running `python setup.py install` within the cloned `viralseq_mapping` directory
 
+* create a plot.ly account [here](https://plot.ly/). Follow [these](https://plot.ly/python/getting-started/#initialization-for-online-plotting) the instructions for adding your plot.ly API key to your ~/.plotly/.credentials file
+
 Modules can then be run based on user needs.
 
 To replicate our analyses:

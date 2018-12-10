@@ -57,3 +57,54 @@ To replicate our analyses:
 * run `genotype.py` 
 
 * run `map_rsv.py` and/or `plot_rsv.py` with appropriate arguments.
+
+## Repository structure
+RSView/
+├── LICENSE
+├── README.md
+├── docs
+│   ├── ComponentSpecs.md
+│   ├── FunctionalSpecs.md
+│   └── rsview_technology_review.pdf
+├── environment.yml
+├── examples
+│   ├── correlation_year.png
+│   ├── maprsv_2011.png
+│   ├── rsvplot_highlight.png
+│   └── rsvplot_time.png
+├── logo_rsview.png
+├── logo_rsview_small.png
+├── rsview
+│   ├── __init__.py
+│   ├── _metadata.py
+│   ├── data
+│   │   ├── RSVG_all_genotyped.csv
+│   │   ├── RSVG_gb_metadata_0-5000.csv
+│   │   ├── RSVG_gb_metadata_10000-15000.csv
+│   │   ├── RSVG_gb_metadata_15000-20000.csv
+│   │   ├── RSVG_gb_metadata_5000-10000.csv
+│   │   ├── country_centroids.csv
+│   │   ├── health_data_RAW.csv
+│   │   ├── health_data_all.csv
+│   │   ├── health_data_summary.csv
+│   │   └── seqs
+│   │       ├── G_all_aligned.fasta
+│   │       ├── G_long_all_aligned.fasta
+│   │       ├── G_longtyped_aligned.fasta
+│   │       ├── G_seqs_long_nogt.fasta
+│   │       ├── G_seqs_longtyped.fasta
+│   │       └── G_seqs_short.fasta
+│   ├── genotype.py
+│   ├── health_download.py
+│   ├── map_rsv.py
+│   ├── parsearguments.py
+│   ├── plot_correlation.py
+│   ├── plot_rsv.py
+│   ├── rsview_demo.ipynb
+│   ├── seq_download.py
+│   └── tests
+│       ├── __init__.py
+│       ├── test_genotype.py
+│       ├── test_map_rsv.py
+│       └── test_seq_download.py
+└── setup.py

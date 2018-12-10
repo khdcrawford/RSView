@@ -4,3 +4,4 @@
 rsview.egg-info
 build
 dist
+.ipynb_checkpoints

@@ -75,6 +75,7 @@ dependencies:
   - pip:
     - appnope==0.1.0
     - backcall==0.1.0
+    - country_converter==0.6.6
     - decorator==4.3.0
     - ipykernel==5.1.0
     - ipython==7.1.1

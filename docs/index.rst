@@ -8,7 +8,7 @@ Welcome to RSView's documentation!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Documentation: 
+   :caption: Contents:
    
    FunctionalSpecs
    ComponentSpecs   

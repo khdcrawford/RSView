@@ -38,7 +38,7 @@ def organize_data(datadir, genotype_dict):
         if os.path.isfile(filename):
             pass
         else:
-            raise Error('Sequence data has not been downloaded yet. Run seq_download.py')
+            raise ValueError('Sequence data has not been downloaded yet. Run seq_download.py')
 
     #Append relevant columns from all data files to DataFrame
     rsv_df = pd.DataFrame()
@@ -88,10 +88,10 @@ def count_types(rsv_df, jitter_dict, level, datadir, genotype_level='collapse'):
 
     lat_lon = pd.read_csv(str(datadir)+'/country_centroids.csv',
                           usecols=['name', 'brk_a3', 'Longitude', 'Latitude']
-                          ).rename(columns={'name':'country', 'brk_a3': 'country_code'})
+                         ).rename(columns={'name':'country', 'brk_a3': 'country_code'})
 
-    health_data = pd.read_csv(str(datadir)+HEALTHFILE, usecols=['country', 'year',
-                              'fufive9']).rename(columns={'fufive9':'under_five_deaths'})
+    health_data = pd.read_csv(str(datadir)+HEALTHFILE, usecols=['country', 'year', 'fufive9']
+                             ).rename(columns={'fufive9':'under_five_deaths'})
 
     #Level specified by required argument
     if level == 'subtype':
@@ -102,7 +102,7 @@ def count_types(rsv_df, jitter_dict, level, datadir, genotype_level='collapse'):
         #compile country-specific subtype count data with lat and long for plotting
         organized_df = df_group.merge(lat_lon, how='left', left_on='country', right_on='country')
         organized_df = organized_df.merge(health_data, how='left', left_on=['country', 'year'],
-                                      right_on=['country', 'year'])
+                                          right_on=['country', 'year'])
 
     elif level == 'genotype':
         #count number of rows(seqs) from each country that are each subtype
@@ -121,7 +121,7 @@ def count_types(rsv_df, jitter_dict, level, datadir, genotype_level='collapse'):
         #compile country-specific subtype count data with lat and long for plotting
         organized_df = df_group.merge(lat_lon, how='left', left_on='country', right_on='country')
         organized_df = organized_df.merge(health_data, how='left', left_on=['country', 'year'],
-                                      right_on=['country', 'year'])
+                                          right_on=['country', 'year'])
 
     #Jitter points for countries that have multiple subtypes, so markers on map don't overlap
     country_group = organized_df.groupby('country').size()
@@ -144,7 +144,7 @@ def count_types(rsv_df, jitter_dict, level, datadir, genotype_level='collapse'):
     return organized_df
 
 
-def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2018]):
+def map_rsv(organized_df, level, genotype_level='collapse', years=[1990, 2018]):
     """
     Use ploy.ly to map RSV sequences onto a global map, with bubbles indicating the virus
     collection location. Bubbles are colored according to subtype or genotype (indicated by the
@@ -156,9 +156,9 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2018]):
     #years can specified by an optional argument
     if years == 'all':
         year_range = [yr for yr in range(int(organized_df.year.min()),
-                      int(organized_df.year.max()))]
+                                         int(organized_df.year.max()))]
     else:
-        year_range = [yr for yr in range(years[0],years[1]+1)]
+        year_range = [yr for yr in range(years[0], years[1]+1)]
 
     #Set color scales: blues for 'A' viruses, reds for 'B'
     blues = plt.get_cmap('GnBu')
@@ -215,7 +215,8 @@ def map_rsv(organized_df, level, genotype_level='collapse', years=[1990,2018]):
                 sizemode='diameter'),
             hovertext=(organized_df.loc[i, 'country'] + '<br>' + str(level) + ' ' +
                        organized_df.loc[i, level] + ' : ' + str(organized_df.loc[i, 'count'])+
-                       ' sequences' + '<br>'+ 'Percent under 5 y.o. deaths due to Acute Respiratory Infection: ' + str(organized_df.loc[i, 'under_five_deaths'])),
+                       ' sequences' + '<br>'+ 'Percent under 5 y.o. deaths due to Acute '\
+                       'Respirator Infection: ' + str(organized_df.loc[i, 'under_five_deaths'])),
             name=organized_df.loc[i, 'country']+' '+organized_df.loc[i, level],
             legendgroup=organized_df.loc[i, level],
             showlegend=False,
@@ -281,7 +282,7 @@ def main(level, datadir, genotype_level, years):
 
 if __name__ == "__main__":
 
-    parser = rsview.parsearguments.mapParser()
-    args = parser.parse_args()
+    PARSER = rsview.parsearguments.mapParser()
+    ARGS = PARSER.parse_args()
 
-    main(args.level, args.datadir, genotype_level=args.genotype_level, years=args.years)
+    main(ARGS.level, ARGS.datadir, genotype_level=ARGS.genotype_level, years=ARGS.years)

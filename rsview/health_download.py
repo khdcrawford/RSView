@@ -5,9 +5,9 @@ import pandas as pd
 import numpy as np
 import country_converter as coco
 
+from parsearguments import healthParser
 
-OUTFILE_ALL = './data/health_data_all.csv'
-OUTFILE_SUMMARY = './data/health_data_summary.csv'
+
 
 def iso3_to_country(iso3):
     """ Take user input and convert it to the short version of the country name """
@@ -17,14 +17,17 @@ def iso3_to_country(iso3):
     country = coco.convert(names=iso3, to='name_short')
     return country
 
-def main():
+def main(datadir):
     """ Process raw health CSV and generate full and summary CSVs """
 
     # need to change path to this csv
-    df_orig = pd.read_csv('./data/health_data_RAW.csv')
+    df_orig = pd.read_csv(str(datadir) + '/health_data_RAW.csv')
 
     # change index to iso3 (3 letter country codes)
     df_orig.columns = df_orig.iloc[3]
+
+    # remove spaces from columns names
+    df_orig.columns = df_orig.columns.str.strip().str.replace(' ', '')
 
     # for NaN values in iso3, replace with 'Global'
     df_orig['iso3'] = df_orig['iso3'].replace(np.nan, 'Global', regex=True)
@@ -45,10 +48,9 @@ def main():
 
 
     column_numbers = [
-        ' nnd ', ' pnd ', ' neo9 ', ' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ']
+        'nnd', 'pnd', 'neo9', 'post9', 'ufive9', 'rneo9', 'rpost9', 'rufive9']
     for i in column_numbers:
         df_no_na[i] = df_no_na[i].str.strip().str.replace(',', '')
-
 
     df_no_na = df_no_na.replace('-', np.nan)
     df_clean = df_no_na.dropna(axis=0, how='any').fillna(0).copy()
@@ -65,6 +67,16 @@ def main():
     df_summary["country_short"] = [iso3_to_country(x) for x in df_summary.iso3.values]
     df_clean["country_short"] = [iso3_to_country(x) for x in df_clean.iso3.values]
 
+    OUTFILE_ALL = str(datadir) + '/health_data_all.csv'
+    OUTFILE_SUMMARY = str(datadir) + '/health_data_summary.csv'
+
     # export full and summary dataframes to csv
     df_clean.to_csv(OUTFILE_ALL)
     df_summary.to_csv(OUTFILE_SUMMARY)
+
+
+if __name__ == "__main__":
+
+    ARGS = healthParser().parse_args()
+
+    main(ARGS.datadir)

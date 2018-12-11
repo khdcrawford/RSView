@@ -102,8 +102,8 @@ def plotParser(allowedData=""):
             help="Specify whether to plot data for all countries or for a "\
             "specific country")
     parser.add_argument(
-            'data_type', type=str, choices=[' nnd ', ' pnd ', ' neo9 ',
-            ' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ',
+            'data_type', type=str, choices=['nnd', 'pnd', 'neo9',
+            'post9', 'ufive9', 'rneo9', 'rpost9', 'rufive9',
             'fneo9', 'fpost9', 'fufive9'], help="Specify which category of "\
             "data to plot:\n" + allowedData)
     parser.add_argument('datadir', type=str,
@@ -129,10 +129,20 @@ def correlationParser(allowedData=""):
         help="Specify whether to plot data for all countries or for a "\
         "specific country")
     parser.add_argument(
-        'data_type', type=str, choices=[' nnd ', ' pnd ', ' neo9 ',
-        ' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ',
+        'data_type', type=str, choices=['nnd', 'pnd', 'neo9',
+        'post9', 'ufive9', 'rneo9', 'rpost9', 'rufive9',
         'fneo9', 'fpost9', 'fufive9'], help="Specify which category of "\
         "data to plot:\n" + allowedData)
     parser.add_argument('datadir', type=str,
         help="Specify the directory that contains health data and seq_download.py output")
+    return parser
+
+
+
+def healthParser():
+    parser = argparse.ArgumentParser(description="Plot data on child death "\
+        "rates from acute respiratory infection",
+        formatter_class=RawTextHelpFormatter)
+    parser.add_argument('datadir', type=str,
+        help="Specify the directory that contains health data")
     return parser

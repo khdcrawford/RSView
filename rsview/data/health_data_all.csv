@@ -1,4 +1,4 @@
-iso3,iso3,country,year, nnd , pnd , neo9 , post9 , ufive9 , rneo9 , rpost9 , rufive9 ,fneo9,fpost9,fufive9,country_short
+iso3,iso3,Country/areaname,year,nnd,pnd,neo9,post9,ufive9,rneo9,rpost9,rufive9,fneo9,fpost9,fufive9,country_short
 Global,Global,Global,2000,4003141.0,6047778.0,307725.0,1466299.0,1774025.0,2.0,11.0,14.0,8.0,24.0,18.0,Global
 Global,Global,Global,2001,3902504.0,5851905.0,294644.0,1406326.0,1700971.0,2.0,11.0,13.0,8.0,24.0,17.0,Global
 Global,Global,Global,2002,3800435.0,5547240.0,282158.0,1348396.0,1630553.0,2.0,10.0,12.0,7.0,24.0,17.0,Global

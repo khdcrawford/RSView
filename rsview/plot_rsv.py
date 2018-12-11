@@ -34,14 +34,14 @@ def make_df_health_all(datadir):
     return DF_HEALTH_ALL
 
 DATA_DICT = {
-    ' nnd ':'Total Neonatal Deaths',
-    ' pnd ':'Total Post-Neonatal Deaths',
-    ' neo9 ':'Neonatal deaths due to Acute Respiratory Infection',
-    ' post9 ':'Post-neonatal deaths due to Acute Respiratory Infection',
-    ' ufive9 ':'Underfive deaths due to Acute Respiratory Infection',
-    ' rneo9 ':'Neonatal death rate from Acute Respiratory Infection (per 1000 live births)',
-    ' rpost9 ':'Post-neonatal death rate from Acute Respiratory Infection (per 1000 live births)',
-    ' rufive9 ':'Underfive death rate from Acute Respiratory Infection (per 1000 live births)',
+    'nnd':'Total Neonatal Deaths',
+    'pnd':'Total Post-Neonatal Deaths',
+    'neo9':'Neonatal deaths due to Acute Respiratory Infection',
+    'post9':'Post-neonatal deaths due to Acute Respiratory Infection',
+    'ufive9':'Underfive deaths due to Acute Respiratory Infection',
+    'rneo9':'Neonatal death rate from Acute Respiratory Infection (per 1000 live births)',
+    'rpost9':'Post-neonatal death rate from Acute Respiratory Infection (per 1000 live births)',
+    'rufive9':'Underfive death rate from Acute Respiratory Infection (per 1000 live births)',
     'fneo9':'Percent Neonatal deaths due to Acute Respiratory Infection',
     'fpost9':'Percent Post-neonatal deaths due to Acute Respiratory Infection',
     'fufive9':'Percent Underfive deaths due to Acute Respiratory Infection'}

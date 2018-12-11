@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import country_converter as coco
 
-from parsearguments import healthParser
+from parsearguments import health_parser
 
 
 
@@ -67,16 +67,16 @@ def main(datadir):
     df_summary["country_short"] = [iso3_to_country(x) for x in df_summary.iso3.values]
     df_clean["country_short"] = [iso3_to_country(x) for x in df_clean.iso3.values]
 
-    OUTFILE_ALL = str(datadir) + '/health_data_all.csv'
-    OUTFILE_SUMMARY = str(datadir) + '/health_data_summary.csv'
+    outfile_all = str(datadir) + '/health_data_all.csv'
+    outfile_summary = str(datadir) + '/health_data_summary.csv'
 
     # export full and summary dataframes to csv
-    df_clean.to_csv(OUTFILE_ALL)
-    df_summary.to_csv(OUTFILE_SUMMARY)
+    df_clean.to_csv(outfile_all)
+    df_summary.to_csv(outfile_summary)
 
 
 if __name__ == "__main__":
 
-    ARGS = healthParser().parse_args()
+    ARGS = health_parser().parse_args()
 
     main(ARGS.datadir)

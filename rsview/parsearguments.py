@@ -5,7 +5,7 @@ import argparse
 
 from argparse import RawTextHelpFormatter
 
-# import rsview
+import rsview
 
 class ArgumentParserNoArgHelp(argparse.ArgumentParser):
     """Like *argparse.ArgumentParser*, but prints help when no arguments."""
@@ -36,12 +36,12 @@ def map_parser():
 def seq_parser():
     """Returns argument parser for `seq_download.py`."""
     parser = ArgumentParserNoArgHelp(
-            description='Downloads RSV G protein sequences & metadata from '\
+        description='Downloads RSV G protein sequences & metadata from '\
             'Genbank. This program is part of {0} (version {1}) written by '\
             '{2}.'.format(rsview.__name__, rsview.__version__,
-            rsview.__author__) + 'For documentation, see {0}'.format(
-            rsview.__url__),
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+                          rsview.__author__) + 'For documentation, see {0}'.format(
+                rsview.__url__),
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--email', required=True, type=str, help='User email'\
             ' for GenBank download.')
     parser.add_argument('--query', required=True, type=str, help='Search '\
@@ -49,7 +49,7 @@ def seq_parser():
     parser.add_argument('--outdir', required=True, type=str, help='Directory'\
             'for downloaded data.')
     parser.add_argument('--outprefix', default='RSVG_gb_metadata', type=str,
-            help='Beginning of file name for output `.csv`. Suffix will '\
+                        help='Beginning of file name for output `.csv`. Suffix will '\
             'specify number of sequences downloaded.')
     parser.add_argument('--db', default='nuccore', type=str, help='Entrez'\
             ' database to search.')
@@ -73,12 +73,12 @@ def seq_parser():
 def genotype_parser():
     """Returns argparser for genotype.py"""
     parser = ArgumentParserNoArgHelp(
-            description='Given RSV G protein sequences & metadata downloaded '\
+        description='Given RSV G protein sequences & metadata downloaded '\
             'from Genbank, fill in missing genotype data. This program is part '\
             ' of {0} (version {1}) written by {2}.'.format(rsview.__name__,
             rsview.__version__, rsview.__author__) + 'For documentation, see '
             '{0}'.format(rsview.__url__),
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--inprefix', required=True, type=str, help="Prefix "\
             "pointing to downloaded sequences and metadata files. --inprefix"\
             " name should be truncated where differences begin between files"\
@@ -89,25 +89,28 @@ def genotype_parser():
     parser.add_argument('--outdir', required=True, type=str, help="Directory "\
             "for outputting cleaned, genotyped `.csv`.")
     parser.add_argument('--threshold', type=int, default=150,
-            help="Threshold for how many sites must match in order to call a"\
+                        help="Threshold for how many sites must match in order to call a"\
             " genotype.")
     return parser
 
-def plotParser(allowedData=""):
+def plot_parser(allowed_data=""):
+    """Returns argparser for plot_rsv.py"""
     parser = argparse.ArgumentParser(description="Plot data on child death "\
             "rates from acute respiratory infection",
-            formatter_class=RawTextHelpFormatter)
+                                     formatter_class=RawTextHelpFormatter)
     parser.add_argument(
-            'level', type=str, choices=['all', 'country'], default='all',
-            help="Specify whether to plot data for all countries or for a "\
+        'level', type=str, choices=['all', 'country'], default='all',
+        help="Specify whether to plot data for all countries or for a "\
             "specific country")
     parser.add_argument(
-            'data_type', type=str, choices=['nnd', 'pnd', 'neo9',
-            'post9', 'ufive9', 'rneo9', 'rpost9', 'rufive9',
-            'fneo9', 'fpost9', 'fufive9'], help="Specify which category of "\
-            "data to plot:\n" + allowedData)
+        'data_type', type=str, choices=['nnd', 'pnd', 'neo9',
+                                        'post9', 'ufive9', 'rneo9', 'rpost9', 'rufive9',
+                                        'fneo9', 'fpost9', 'fufive9'],
+        help="Specify which category of "\
+            "data to plot:\n" + allowed_data)
     parser.add_argument('datadir', type=str,
-                    help="Specify the directory that contains health data and seq_download.py output")
+                        help="Specify the directory that contains"
+                        + " health data and seq_download.py output")
     parser.add_argument(
         '--country', type=str, default='Global',
         help="Specify the country for which to plot data",
@@ -120,29 +123,34 @@ def plotParser(allowedData=""):
 
 
 
-def correlationParser(allowedData=""):
+def correlation_parser(allowed_data=""):
+    """Returns argparser for plot_correlation.py"""
     parser = argparse.ArgumentParser(description="Plot data on child death "\
         "rates from acute respiratory infection",
-        formatter_class=RawTextHelpFormatter)
+                                     formatter_class=RawTextHelpFormatter)
     parser.add_argument(
         'level', type=str, choices=['all', 'year'], default='all',
         help="Specify whether to plot data for all countries or for a "\
         "specific country")
     parser.add_argument(
         'data_type', type=str, choices=['nnd', 'pnd', 'neo9',
-        'post9', 'ufive9', 'rneo9', 'rpost9', 'rufive9',
-        'fneo9', 'fpost9', 'fufive9'], help="Specify which category of "\
-        "data to plot:\n" + allowedData)
-    parser.add_argument('datadir', type=str,
-        help="Specify the directory that contains health data and seq_download.py output")
+                                        'post9', 'ufive9', 'rneo9', 'rpost9', 'rufive9',
+                                        'fneo9', 'fpost9', 'fufive9'],
+        help="Specify which category of "\
+        "data to plot:\n" + allowed_data)
+    parser.add_argument('datadir',
+                        type=str,
+                        help="Specify the directory that contains"
+                        + " health data and seq_download.py output")
     return parser
 
 
 
-def healthParser():
+def health_parser():
+    """Returns argparser for health_download.py"""
     parser = argparse.ArgumentParser(description="Plot data on child death "\
         "rates from acute respiratory infection",
-        formatter_class=RawTextHelpFormatter)
+                                     formatter_class=RawTextHelpFormatter)
     parser.add_argument('datadir', type=str,
-        help="Specify the directory that contains health data")
+                        help="Specify the directory that contains health data")
     return parser

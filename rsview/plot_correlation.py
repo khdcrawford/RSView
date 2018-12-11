@@ -8,7 +8,7 @@ import plotly.graph_objs as go
 import map_rsv
 import plot_rsv
 
-from parsearguments import correlationParser
+from parsearguments import correlation_parser
 
 # import rsview.parsearguments
 
@@ -247,6 +247,6 @@ def main(level, data_type, datadir):
 
 if __name__ == "__main__":
 
-    ARGS = correlationParser(plot_rsv.dict_to_help(plot_rsv.DATA_DICT)).parse_args()
+    ARGS = correlation_parser(plot_rsv.dict_to_help(plot_rsv.DATA_DICT)).parse_args()
 
     main(ARGS.level, ARGS.data_type, ARGS.datadir)

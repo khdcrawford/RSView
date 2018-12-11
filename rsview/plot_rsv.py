@@ -2,12 +2,10 @@
 
 import pandas as pd
 import country_converter as coco
-import plotly
 import plotly.graph_objs as go
 from plotly.offline import plot
-import rsview
 
-from parsearguments import plotParser
+from parsearguments import plot_parser
 
 
 # import rsview.parsearguments
@@ -26,12 +24,18 @@ def dict_to_help(data_types):
     return output
 
 def make_df_health_summary(datadir):
-    DF_HEALTH_SUMMARY = pd.read_csv(str(datadir) + '/health_data_summary.csv')
-    return DF_HEALTH_SUMMARY
+    """
+    Returns summary dataframe from health data at specified location
+    """
+    df_health_summary = pd.read_csv(str(datadir) + '/health_data_summary.csv')
+    return df_health_summary
 
 def make_df_health_all(datadir):
-    DF_HEALTH_ALL = pd.read_csv(str(datadir) + '/health_data_all.csv')
-    return DF_HEALTH_ALL
+    """
+    Returns full dataframe from health data at specified location
+    """
+    df_health_all = pd.read_csv(str(datadir) + '/health_data_all.csv')
+    return df_health_all
 
 DATA_DICT = {
     'nnd':'Total Neonatal Deaths',
@@ -65,15 +69,15 @@ def is_country_present(dataframe, country):
 
 def plot_summary(data_type, datadir, highlight_country=None):
     """ Plots summary health data. If a highlight_country is specified, it will be highlighted """
-    
-    DF_HEALTH_SUMMARY = make_df_health_summary(datadir)
 
-    COLOR_DICT = ['rgba(204,204,204,1)'] * len(DF_HEALTH_SUMMARY)
-    color_highlight = COLOR_DICT.copy()
+    df_health_summary = make_df_health_summary(datadir)
+
+    color_dict = ['rgba(204,204,204,1)'] * len(df_health_summary)
+    color_highlight = color_dict.copy()
 
 
 
-    df_sorted = DF_HEALTH_SUMMARY.sort_values(data_type)
+    df_sorted = df_health_summary.sort_values(data_type)
     df_sorted = df_sorted.reset_index(drop=True)
 
     if highlight_country is not None:
@@ -121,17 +125,17 @@ def plot_country(data_type, datadir, country='Global'):
 
     country_short = input_to_country(country)
 
-    DF_HEALTH_ALL = make_df_health_all(datadir)
-    df_country1 = DF_HEALTH_ALL[(DF_HEALTH_ALL['country_short'] == country_short)]
+    df_health_all = make_df_health_all(datadir)
+    df_country1 = df_health_all[(df_health_all['country_short'] == country_short)]
 
-    COLOR_DICT = ['rgba(204,204,204,1)'] * len(DF_HEALTH_ALL)
+    color_dict = ['rgba(204,204,204,1)'] * len(df_health_all)
 
     trace1 = go.Bar(
         x=df_country1['year'],
         y=df_country1[data_type],
         name=DATA_DICT[data_type] + ' in ' + country,
         marker=dict(
-            color=COLOR_DICT
+            color=color_dict
             ),
     )
 
@@ -160,7 +164,7 @@ def main(level, data_type, datadir, country='Global', highlight_country=None):
 
 if __name__ == "__main__":
 
-    ARGS = plotParser(dict_to_help(DATA_DICT)).parse_args()
+    ARGS = plot_parser(dict_to_help(DATA_DICT)).parse_args()
 
     main(
         ARGS.level, ARGS.data_type, ARGS.datadir, country=ARGS.country,

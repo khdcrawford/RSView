@@ -1,6 +1,7 @@
 """
 Unittests for map_rsv.py
 """
+import os
 import unittest
 from unittest.mock import patch
 
@@ -40,14 +41,19 @@ class TestMapRsv(unittest.TestCase):
         """
         rsv_df = self.run_organize_data('data')
 
-        self.assertEqual(list(rsv_df.columns), ['collection_date', 'country', 'genotype',
-                                                'subtype', 'year', 'genotype_group'])
+        self.assertEqual(list(rsv_df.columns), ['collection_date', 'country', 'subtype',
+                                                'genotype', 'year', 'genotype_group'])
         self.assertTrue(len(rsv_df[col].notnull()) == len(rsv_df) for col in rsv_df.columns)
 
     def test_count_types(self):
         """
         Test map_rsv.count_types function with different arguments
         """
+        #Test that health data file exists
+        self.assertTrue(os.path.isfile('data'+map_rsv.HEALTHFILE))
+        #Test that latitude/longitude data file exists
+        self.assertTrue(os.path.isfile('data'+'/country_centroids.csv'))
+
         #Test level='subtype'
         organized_df = self.run_count_types('subtype', 'data')
 

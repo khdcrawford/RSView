@@ -2,7 +2,6 @@
 and viral subtype or genotype """
 
 import os
-import glob
 import pandas as pd
 import numpy as np
 import plotly.plotly as py

@@ -20,7 +20,7 @@ GENOTYPE_DICT = {'GA2':'GA', 'GA5':'GA', 'GB12':'GB', 'GB13':'GB', 'GA3':'GA', '
                  'BA11':'BA', 'BA7':'BA', 'GA7':'GA', 'BA 10':'BA', 'BA 12':'BA', 'BA 14':'BA',
                  'BA 2':'BA', 'BA 8':'BA', 'BA 9':'BA', 'SAA2':'SAA', 'BA8':'BA', 'GA1':'GA',
                  'BA4':'BA', 'BA5':'BA', 'BA12':'BA', 'GB1':'GB', 'BA08':'BA', 'BA09':'BA',
-                 'BA IV':'BA', 'THB':'TH'}
+                 'BA IV':'BA', 'THB':'TH', 'GA6':'GA', 'GB4':'GB'}
 
 def organize_data(datadir, genotype_dict):
     """
@@ -45,6 +45,7 @@ def organize_data(datadir, genotype_dict):
                                              'genotype'], parse_dates=['collection_date'])
 
     rsv_df['year'] = rsv_df['collection_date'].apply(lambda x: x.year)
+    rsv_df['genotype'] = rsv_df.genotype.str.replace(' ', '') #Get rid of whitespaces
 
     #Add column to group genotypes by clade
     rsv_df = rsv_df.assign(genotype_group=rsv_df['genotype'].map(genotype_dict))

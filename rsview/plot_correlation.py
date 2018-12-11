@@ -112,22 +112,22 @@ def get_ratio_year(dataframe):
     return df_ratio
 
 
-def merge_ratio_health(df_ratio):
+def merge_ratio_health(df_ratio, datadir):
     """
     Merge the RSV sequence dataframe with calculated ratios with the health dataframe
     """
-    df_health_summary = pd.read_csv('./data/health_data_summary.csv')
+    df_health_summary = plot_rsv.make_df_health_summary(datadir)
     df_ratio["iso3"] = [country_to_iso3(x) for x in df_ratio.country.values]
 
     df_merge = pd.merge(df_ratio, df_health_summary, how='inner', on=['iso3'])
 
     return df_merge
 
-def merge_ratio_health_year(df_ratio):
+def merge_ratio_health_year(df_ratio, datadir):
     """
     Merge the RSV sequence dataframe with yearly calculated ratios with the health dataframe
     """
-    df_health_all = pd.read_csv('./data/health_data_all.csv')
+    df_health_all = plot_rsv.make_df_health_all(datadir)
     df_ratio["iso3"] = [country_to_iso3(x) for x in df_ratio.country.values]
 
     df_merge = pd.merge(df_ratio, df_health_all, how='inner', on=['iso3', 'year'])
@@ -234,13 +234,13 @@ def main(level, data_type, datadir):
     if level == 'all':
         rsv_df_count = count_subtypes(rsv_df)
         df_ratio_all = get_ratio_all(rsv_df_count)
-        df_merged = merge_ratio_health(df_ratio_all)
+        df_merged = merge_ratio_health(df_ratio_all, datadir)
         plot_ratio(df_merged, data_type)
 
     else:
         rsv_df_count = count_subtypes_year(rsv_df)
         df_ratio_year = get_ratio_year(rsv_df_count)
-        df_merged = merge_ratio_health_year(df_ratio_year)
+        df_merged = merge_ratio_health_year(df_ratio_year, datadir)
         plot_ratio_year(df_merged, data_type)
 
 

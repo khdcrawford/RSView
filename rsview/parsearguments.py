@@ -49,7 +49,7 @@ def seq_parser():
     parser.add_argument('--outdir', required=True, type=str, help='Directory'\
             'for downloaded data.')
     parser.add_argument('--outprefix', default='RSVG_gb_metadata', type=str,
-                        help='Beginning of file name for output `.csv`. Suffix will '\
+            help='Beginning of file name for output `.csv`. Suffix will '\
             'specify number of sequences downloaded.')
     parser.add_argument('--db', default='nuccore', type=str, help='Entrez'\
             ' database to search.')
@@ -59,7 +59,8 @@ def seq_parser():
             'seqs to download into one file. Default of 5000 balances '\
             'download time and minimizing the number of separate files.')
     parser.add_argument('--maxseqs', default=20000, type=int, help='Maximum '\
-            'number of sequences to download across all output files.')
+            'number of sequence hits to search for and download across all '\
+            'output files.')
     parser.add_argument('--batchsize', default=100, type=int, help='Number '\
             'seqs to download in one retrieval. If much larger than 100, '\
             'download will be quite slow.')
@@ -89,8 +90,10 @@ def genotype_parser():
     parser.add_argument('--outdir', required=True, type=str, help="Directory "\
             "for outputting cleaned, genotyped `.csv`.")
     parser.add_argument('--threshold', type=int, default=150,
-                        help="Threshold for how many sites must match in order to call a"\
+            help="Threshold for how many sites must match in order to call a"\
             " genotype.")
+    parser.add_argument('--full_length', type=int, default=290, help="Min "\
+            "length for a sequence to be considered full length.")
     return parser
 
 def plot_parser(allowed_data=""):

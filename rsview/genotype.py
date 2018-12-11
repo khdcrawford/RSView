@@ -52,7 +52,7 @@ def merge_csvs(csv_files):
     return full_df
 
 
-def seqstofastas(seqs_df, outfiles):
+def seqstofastas(seqs_df, outfiles, full_len):
     """
     Takes a dataframe containing sequence, subtype, and genotype info and
     outputs specified `.fasta` files.
@@ -83,12 +83,12 @@ def seqstofastas(seqs_df, outfiles):
             seq = seqs_df.at[i, 'G_seq']
             if seq != 'NaN':
                 if gtype != 'NaN':
-                    if len(seq) > 290:
+                    if len(seq) > full_len:
                         longtyped.write('{0}{1}\n'.format(header, seq))
                     else:
                         short.write('{0}{1}\n'.format(header, seq))
                 else:
-                    if len(seq) > 290:
+                    if len(seq) > full_len:
                         long_nogt.write('{0}{1}\n'.format(header, seq))
                     else:
                         short.write('{0}{1}\n'.format(header, seq))
@@ -273,6 +273,7 @@ def main():
     outfile = '{0}/RSVG_all_genotyped.csv'.format(args['outdir'])
 
     hd_threshold = args['threshold']
+    full_length = args['full_length']
 
     print('Input files: {0}'.format(files))
 
@@ -295,6 +296,9 @@ def main():
 
     seqs = seqs.fillna(value='NaN') #easily callable placeholder
 
+    assert seqs.G_seq.map(len).max() >= full_length, 'No full length ' \
+            'sequences. Cannot assign new genotypes.'
+
     #Establish files for seqs. Make 3 files for iterative alignment.
     longtyped_fasta = '{0}/G_seqs_longtyped.fasta'.format(args['seqsdir'])
     long_fasta = '{0}/G_seqs_long_nogt.fasta'.format(args['seqsdir'])
@@ -302,7 +306,7 @@ def main():
 
     seqs_files = [longtyped_fasta, long_fasta, short_fasta]
 
-    seqstofastas(seqs, seqs_files)
+    seqstofastas(seqs, seqs_files, full_length)
 
     # Establish files for alignments
     aligned_ltyped = '{0}/G_longtyped_aligned.fasta'.format(args['seqsdir'])

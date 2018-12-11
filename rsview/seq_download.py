@@ -210,7 +210,15 @@ def main():
     database = args['db']
     filetype = args['filetype']
     outmode = args['outmode']
-    batchsize = min(filesize - begin, args['batchsize'])
+
+    if 0 < (filesize - begin) < 100:
+        batchsize = filesize - begin
+    else:
+        batchsize = args['batchsize']
+
+    assert maxseqs >= begin, "Search ends before index of `--firstseq`. "\
+            "`--maxseqs` ({0}) must be greater than `--firstseq` ({1})."\
+            .format(maxseqs, begin)
 
     if not os.path.isdir(args['outdir']):
         os.makedirs(args['outdir'])
@@ -225,12 +233,18 @@ def main():
                 '`--maxseqs` may be limiting number of IDs returned.'.format(
                 num_all, query))
 
+    firstseq = begin # keept track of first seq for print statements
+
     while begin < maxseqs:
-        end = begin + filesize
+        if (begin + filesize) <= maxseqs:
+            end = begin + filesize
+        else:
+            end = maxseqs
         outfile = '{0}/{1}_{2}-{3}.csv'.format(args['outdir'],
         		args['outprefix'], begin, end)
         print('\nDownloading seq file number {0} of {1}.'.format(
-            int(math.ceil(end/filesize)), int(math.ceil(num_all/filesize))))
+                int(math.ceil((end-firstseq)/filesize)), 
+                int(math.ceil((num_all-firstseq)/filesize))))
         print('Saving sequences and metadata to: {0}'.format(outfile))
 
         ids = getids(database, end, query)

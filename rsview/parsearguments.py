@@ -5,7 +5,7 @@ import argparse
 
 from argparse import RawTextHelpFormatter
 
-import rsview
+# import rsview
 
 class ArgumentParserNoArgHelp(argparse.ArgumentParser):
     """Like *argparse.ArgumentParser*, but prints help when no arguments."""
@@ -106,6 +106,8 @@ def plotParser(allowedData=""):
             ' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ',
             'fneo9', 'fpost9', 'fufive9'], help="Specify which category of "\
             "data to plot:\n" + allowedData)
+    parser.add_argument('datadir', type=str,
+                    help="Specify the directory that contains health data and seq_download.py output")
     parser.add_argument(
         '--country', type=str, default='Global',
         help="Specify the country for which to plot data",
@@ -131,4 +133,6 @@ def correlationParser(allowedData=""):
         ' post9 ', ' ufive9 ', ' rneo9 ', ' rpost9 ', ' rufive9 ',
         'fneo9', 'fpost9', 'fufive9'], help="Specify which category of "\
         "data to plot:\n" + allowedData)
+    parser.add_argument('datadir', type=str,
+        help="Specify the directory that contains health data and seq_download.py output")
     return parser

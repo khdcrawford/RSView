@@ -48,6 +48,7 @@ setup(
                'rsview/genotype.py',
                'rsview/map_rsv.py',
                'rsview/health_download.py',
+               'rsview/parsearguments.py',
                'rsview/plot_rsv.py',
                'rsview/plot_correlation.py'
                 ]

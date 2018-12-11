@@ -8,9 +8,11 @@ import plotly.graph_objs as go
 import map_rsv
 import plot_rsv
 
-
-
 from parsearguments import correlationParser
+
+# import rsview.parsearguments
+
+# from parsearguments import correlationParser
 
 def country_to_iso3(country):
     """ Take user country input and convert to ISO3 to access dataframe """
@@ -219,11 +221,11 @@ def plot_ratio_year(df_merge, data_type):
 
 
 
-def main(level, data_type):
+def main(level, data_type, datadir):
     """
     Organize genotype data and plot correlation between subtypes and health metrics
     """
-    rsv_df = map_rsv.organize_data(map_rsv.DATAFILES, map_rsv.GENOTYPE_DICT)
+    rsv_df = map_rsv.organize_data(datadir, map_rsv.GENOTYPE_DICT)
     rsv_df = rsv_df.dropna(subset=['subtype']).copy()
 
     rsv_df_year = rsv_df.dropna(subset=['year']).copy()
@@ -247,4 +249,4 @@ if __name__ == "__main__":
 
     ARGS = correlationParser(plot_rsv.dict_to_help(plot_rsv.DATA_DICT)).parse_args()
 
-    main(ARGS.level, ARGS.data_type)
+    main(ARGS.level, ARGS.data_type, ARGS.datadir)

@@ -5,13 +5,16 @@ import country_converter as coco
 import plotly
 import plotly.graph_objs as go
 from plotly.offline import plot
+import rsview
 
 from parsearguments import plotParser
 
 
-plotly.tools.set_credentials_file(username='jillianeb', api_key='eOsTljd6vVMiyuy4Msy0')
-plotly.tools.set_config_file(world_readable=False,
-                             sharing='private')
+# import rsview.parsearguments
+
+# plotly.tools.set_credentials_file(username='jillianeb', api_key='eOsTljd6vVMiyuy4Msy0')
+# plotly.tools.set_config_file(world_readable=False,
+#                              sharing='private')
 
 
 def dict_to_help(data_types):
@@ -22,10 +25,13 @@ def dict_to_help(data_types):
         output = output + data_types[item] + "\n"
     return output
 
-DF_HEALTH_ALL = pd.read_csv('./data/health_data_all.csv')
-DF_HEALTH_SUMMARY = pd.read_csv('./data/health_data_summary.csv')
+def make_df_health_summary(datadir):
+    DF_HEALTH_SUMMARY = pd.read_csv(str(datadir) + '/health_data_summary.csv')
+    return DF_HEALTH_SUMMARY
 
-COLOR_DICT = ['rgba(204,204,204,1)'] * len(DF_HEALTH_SUMMARY)
+def make_df_health_all(datadir):
+    DF_HEALTH_ALL = pd.read_csv(str(datadir) + '/health_data_all.csv')
+    return DF_HEALTH_ALL
 
 DATA_DICT = {
     ' nnd ':'Total Neonatal Deaths',
@@ -57,10 +63,15 @@ def is_country_present(dataframe, country):
     return in_dataset
 
 
-def plot_summary(data_type, highlight_country=None):
+def plot_summary(data_type, datadir, highlight_country=None):
     """ Plots summary health data. If a highlight_country is specified, it will be highlighted """
+    
+    DF_HEALTH_SUMMARY = make_df_health_summary(datadir)
 
+    COLOR_DICT = ['rgba(204,204,204,1)'] * len(DF_HEALTH_SUMMARY)
     color_highlight = COLOR_DICT.copy()
+
+
 
     df_sorted = DF_HEALTH_SUMMARY.sort_values(data_type)
     df_sorted = df_sorted.reset_index(drop=True)
@@ -105,12 +116,15 @@ def plot_summary(data_type, highlight_country=None):
 
 
 
-def plot_country(data_type, country='Global'):
+def plot_country(data_type, datadir, country='Global'):
     """ Plots health data for a specified country over time """
 
     country_short = input_to_country(country)
 
+    DF_HEALTH_ALL = make_df_health_all(datadir)
     df_country1 = DF_HEALTH_ALL[(DF_HEALTH_ALL['country_short'] == country_short)]
+
+    COLOR_DICT = ['rgba(204,204,204,1)'] * len(DF_HEALTH_ALL)
 
     trace1 = go.Bar(
         x=df_country1['year'],
@@ -137,17 +151,17 @@ def plot_country(data_type, country='Global'):
     #return py.iplot(fig, filename='stacked-bar', world_readable=True)
 
 
-def main(level, data_type, country='Global', highlight_country=None):
+def main(level, data_type, datadir, country='Global', highlight_country=None):
     """ Processes user inputs to generate the specified graphs """
 
     if level != 'country':
-        return plot_summary(data_type, highlight_country)
-    return plot_country(data_type, country)
+        return plot_summary(data_type, datadir, highlight_country)
+    return plot_country(data_type, datadir, country)
 
 if __name__ == "__main__":
 
     ARGS = plotParser(dict_to_help(DATA_DICT)).parse_args()
 
     main(
-        ARGS.level, data_type=ARGS.data_type, country=ARGS.country,
+        ARGS.level, ARGS.data_type, ARGS.datadir, country=ARGS.country,
         highlight_country=ARGS.highlight_country)

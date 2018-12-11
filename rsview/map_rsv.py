@@ -31,22 +31,18 @@ def organize_data(datadir, genotype_dict):
     """
 
     #Find datafiles in user-specified directory
-    datafiles = [filename for filename in glob.glob(str(datadir)+'/RSVG_gb_metadata*.csv')]
+    filename = str(datadir)+'/RSVG_all_genotyped.csv'
+    #Return error if data file is not present
 
-    #Return error if data files are not present
-    for filename in datafiles:
-        if os.path.isfile(filename):
-            pass
-        else:
-            raise ValueError('Sequence data has not been downloaded yet. Run seq_download.py')
+    if os.path.isfile(filename):
+        pass
+    else:
+        raise ValueError('Sequence data has not been downloaded yet. Run seq_download.py')
 
     #Append relevant columns from all data files to DataFrame
-    rsv_df = pd.DataFrame()
 
-    for datafile in datafiles:
-        temp_df = pd.read_csv(datafile, usecols=['collection_date', 'country', 'subtype',
-                                                 'genotype'], parse_dates=['collection_date'])
-        rsv_df = rsv_df.append(temp_df, ignore_index=True)
+    rsv_df = pd.read_csv(filename, usecols=['collection_date', 'country', 'subtype',
+                                             'genotype'], parse_dates=['collection_date'])
 
     rsv_df['year'] = rsv_df['collection_date'].apply(lambda x: x.year)
 
@@ -90,8 +86,9 @@ def count_types(rsv_df, jitter_dict, level, datadir, genotype_level='collapse'):
                           usecols=['name', 'brk_a3', 'Longitude', 'Latitude']
                          ).rename(columns={'name':'country', 'brk_a3': 'country_code'})
 
-    health_data = pd.read_csv(str(datadir)+HEALTHFILE, usecols=['country', 'year', 'fufive9']
-                             ).rename(columns={'fufive9':'under_five_deaths'})
+    health_data = pd.read_csv(str(datadir)+HEALTHFILE, usecols=['Country/areaname', 'year',
+                              'fufive9']).rename(columns={'Country/areaname': 'country',
+                              'fufive9':'under_five_deaths'})
 
     #Level specified by required argument
     if level == 'subtype':

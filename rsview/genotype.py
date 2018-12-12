@@ -94,7 +94,7 @@ def seqstofastas(seqs_df, outfiles, full_len):
                         short.write('{0}{1}\n'.format(header, seq))
 
 
-def align_seqs(infiles, outfiles):
+def alignseqs(infiles, outfiles):
     """Use mafft to align RSV G sequences.
 
     Due to significant disparities in length, use a three step approach.
@@ -221,6 +221,7 @@ def assign_gt(alignment, gt_refdict, hd_threshold):
     for record in SeqIO.parse(alignment, 'fasta'):
         genotype = record.description.split(' ')[2]
         subtype = record.description.split(' ')[1]
+        seqindex = record.name
         # only add genotypes for seqs with subtypes so can check concordance
         if genotype == 'NaN' and subtype != 'NaN':
             gt_hds = {}
@@ -246,7 +247,7 @@ def assign_gt(alignment, gt_refdict, hd_threshold):
                               record.name, new_gt, 'A'))
                         new_gt = 'NaN'
 
-                updated_gts.append((record.name, new_gt))
+                updated_gts.append((seqindex, new_gt))
 
     return [updated_gts, mistyped]
 
@@ -316,7 +317,7 @@ def main():
     alignment_files = [aligned_ltyped, aligned_long, aligned_all]
 
     # Make alignments
-    align_seqs(seqs_files, alignment_files)
+    alignseqs(seqs_files, alignment_files)
 
     # Set reference seqs for each genotype
     gt_refs = getrefseqs(aligned_ltyped, aligned_all)

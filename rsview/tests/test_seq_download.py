@@ -1,8 +1,4 @@
-"""Test rsview.seq_download.py
-
-These tests rely on Entrez.efetch functioning properly and 
-they do not test that function. 
-"""
+"""Test rsview.seq_download.py"""
 import unittest
 from Bio import Entrez
 import rsview.seq_download as seq_download
@@ -30,6 +26,7 @@ TEST_GENOTYPES = ['', '', 'NA1', '']
 
 COLUMNS = ['G_seq', 'genotype', 'subtype', 'collection_date', 'country']
 
+
 class TestSeqDownload(unittest.TestCase):
     """
     Tests seq_download.py
@@ -43,19 +40,19 @@ class TestSeqDownload(unittest.TestCase):
 
     def test_find_subtype(self):
         """Make sure get correct subtypes from toy data."""
-        for i in range(len(TEST_SUBTYPES)):
+        for (i, test_subtype) in enumerate(TEST_SUBTYPES):
             self.assertTrue(seq_download.find_subtype(
-                    TEST_DICTS[i]) == TEST_SUBTYPES[i])
+                    TEST_DICTS[i]) == test_subtype)
 
     def test_find_genotype(self):
         """Makes sure genotype added to toy dicts.
         Assumes `test_find_subtype` passes.
         Make sure assigns correct genotypes basd on toy data.
         """
-        for i in range(len(TEST_DICTS)):
-            TEST_DICTS[i]['subtype'] = TEST_SUBTYPES[i] 
+        for (i, test_dict) in enumerate(TEST_DICTS):
+            test_dict['subtype'] = TEST_SUBTYPES[i]
             genotyped_dict = seq_download.find_genotype(
-                    TEST_DICTS[i], GT_A_LIST, GT_B_LIST)
+                    test_dict, GT_A_LIST, GT_B_LIST)
             self.assertTrue('genotype' in genotyped_dict.keys())
             self.assertTrue(genotyped_dict['genotype'] == TEST_GENOTYPES[i])
 
@@ -71,7 +68,7 @@ class TestSeqDownload(unittest.TestCase):
         firstseq = 0
         rettype = 'gb'
         retmode = 'xml'
-        handle = seq_download.gethandle(DB, ids, firstseq, RETMAX, 
+        handle = seq_download.gethandle(DB, ids, firstseq, RETMAX,
                 rettype, retmode)
 
         test_df = seq_download.makedf(handle)
@@ -80,8 +77,6 @@ class TestSeqDownload(unittest.TestCase):
 
         for column in COLUMNS:
             self.assertTrue(column in list(test_df))
-
-
 
 
 

@@ -44,6 +44,7 @@ class TestSeqDownload(unittest.TestCase):
             self.assertTrue(seq_download.find_subtype(
                     TEST_DICTS[i]) == test_subtype)
 
+
     def test_find_genotype(self):
         """Makes sure genotype added to toy dicts.
         Assumes `test_find_subtype` passes.
@@ -55,6 +56,7 @@ class TestSeqDownload(unittest.TestCase):
                     test_dict, GT_A_LIST, GT_B_LIST)
             self.assertTrue('genotype' in genotyped_dict.keys())
             self.assertTrue(genotyped_dict['genotype'] == TEST_GENOTYPES[i])
+            
 
     def test_makedf(self):
         """Test dataframe creation from small download.

@@ -150,7 +150,7 @@ class TestGenotyping(unittest.TestCase):
 
         test_refs = genotype.getrefseqs(ALIGNMENTS[0], ALIGNMENTS[2])
 
-        for key in test_refs.keys():
+        for key in test_refs:
             self.assertTrue(key in gt_list)
             # Empty strings are false. Ensure genotypes have seq.
             self.assertTrue(test_refs[key])
@@ -159,14 +159,17 @@ class TestGenotyping(unittest.TestCase):
 
     def test_assign_gt(self):
         """Test assigning gneotypes with actual data.
-        
+
         I have not created toy `.fasta` files for testing, so test on real
         data.
-        There is a check to correct for mistyping in the main code, so 
-        just make sure output is as expected.
+        There is a rough check for mistyping in the main code, so just make
+        sure output is as expected. Overall, we only check if our genotypes
+        are logical and make no claim that they are fully accurate.
 
-        Check that if threshold is changed, number of mistypeds changes
-        as expected.
+        Check that if threshold is changed, number of new genotypes and 
+        mistyped genotypes changes as expected.
+
+        This test is slow and takes ~25 seconds to run.
         """
 
         self.assertTrue(os.path.isfile(ALIGNMENTS[2]))
@@ -174,7 +177,6 @@ class TestGenotyping(unittest.TestCase):
         alignall = ALIGNMENTS[2]
 
         # Assumes test_getrefseqs passes
-
         test_refgts = genotype.getrefseqs(ALIGNMENTS[0], ALIGNMENTS[2])
 
         threshold_norm = 150
@@ -183,17 +185,21 @@ class TestGenotyping(unittest.TestCase):
 
         assigngt_norm = genotype.assign_gt(alignall, test_refgts,
                 threshold_norm)
-        self.assertTrue(len(assigngt_norm[2])==assigngt_norm[1])
+        self.assertTrue(len(assigngt_norm[2]) == assigngt_norm[1])
 
         assigngt_lax = genotype.assign_gt(alignall, test_refgts,
                 threshold_lax)
-        self.assertTrue(len(assigngt_lax[2])==assigngt_lax[1])
+        self.assertTrue(len(assigngt_lax[2]) == assigngt_lax[1])
 
         assigngt_strict = genotype.assign_gt(alignall, test_refgts,
                 threshold_strict)
-        self.assertTrue(len(assigngt_strict[2])==assigngt_strict[1])
+        self.assertTrue(len(assigngt_strict[2]) == assigngt_strict[1])
 
-        self.assertTrue(assigngt_strict[1] < assigngt_norm[1] < assigngt_lax[1])
+        self.assertTrue(assigngt_strict[1] < assigngt_norm[1] \
+                < assigngt_lax[1])
+
+        self.assertTrue(len(assigngt_strict[0]) < len(assigngt_norm[0]) \
+                < len(assigngt_lax[0]))
 
 
 if __name__ == '__main__':

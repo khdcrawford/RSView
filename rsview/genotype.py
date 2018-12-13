@@ -217,6 +217,7 @@ def assign_gt(alignment, gt_refdict, hd_threshold):
 
     #Keep track of number seqs mistyped based on subtype/genotype disagreement
     mistyped = 0
+    mistyped_info = []
 
     for record in SeqIO.parse(alignment, 'fasta'):
         genotype = record.description.split(' ')[2]
@@ -234,22 +235,18 @@ def assign_gt(alignment, gt_refdict, hd_threshold):
                 if record.description.split(' ')[1] == 'B':
                     if new_gt not in GT_B_LIST:
                         mistyped += 1
-                        print("\nSeq: {0}. Genotype {1} and subtype {2} "\
-                              "discordant. Reset genotype to 'NaN'.".format(
-                              record.name, new_gt, 'B'))
+                        mistyped_info.append((record.name, new_gt, 'B'))
                         new_gt = 'NaN'
 
                 elif record.description.split(' ')[1] == 'A':
                     if new_gt not in GT_A_LIST:
                         mistyped += 1
-                        print("\nSeq: {0}. Genotype {1} and subtype {2} "\
-                              "discordant. Reset genotype to 'NaN'.".format(
-                              record.name, new_gt, 'A'))
+                        mistyped_info.append((record.name, new_gt, 'A'))
                         new_gt = 'NaN'
 
                 updated_gts.append((seqindex, new_gt))
 
-    return [updated_gts, mistyped]
+    return [updated_gts, mistyped, mistyped_info]
 
 
 def main():
@@ -326,9 +323,15 @@ def main():
     new_gt_info = assign_gt(aligned_all, gt_refs, hd_threshold)
     new_gts = new_gt_info[0]
     num_mistyped = new_gt_info[1]
+    mismatches = new_gt_info[2]
 
-    print("\n{0} genotypes mistyped and reset to 'NaN'.".format(num_mistyped))
-    print('{0} genotypes added.'.format(len(new_gts) - num_mistyped))
+    print("\n{0} genotypes mistyped and reset to 'NaN'".format(num_mistyped))
+    print("Those mismathces were:")
+    for mismatch in mismatches:
+        print("Seq: {0}. Assigned genotype: {1}. Mismatched with subtype: "\
+                "{2}. Reset to 'NaN'.".format(mismatch[0], mismatch[1],
+                mismatch[2]))
+    print('\n{0} genotypes added.'.format(len(new_gts) - num_mistyped))
     print("{0} seqs now genotyped.".format(already_genotyped + len(new_gts)
             - num_mistyped))
 

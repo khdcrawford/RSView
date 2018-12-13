@@ -23,6 +23,11 @@ ALIGNMENTS = [SEQSDIR+'/G_longtyped_aligned.fasta',
               SEQSDIR+'/G_long_all_aligned.fasta',
               SEQSDIR+'/G_all_aligned.fasta']
 
+GT_A_LIST = ['ON1', 'GA1', 'GA2', 'GA3', 'GA5', 'GA6', 'GA7', 'NA1', 'NA2',
+             'NA3', 'SAA1', 'SAA2']
+GT_B_LIST = ['BA', 'BA2', 'BA4', 'BA5', 'BA7', 'BA8', 'BA9', 'BA10', 'BA11',
+             'BA12', 'BA14', 'THB', 'SAB1', 'SAB3', 'SAB4', 'GB1', 'GB2',
+             'GB3', 'GB4', 'GB13', 'GB12']
 
 class TestGenotyping(unittest.TestCase):
     """
@@ -129,20 +134,66 @@ class TestGenotyping(unittest.TestCase):
                                 align_seq = ''
                         else:
                             align_seq += line
-                            
+
 
     def test_getrefseqs(self):
-        """Test getting reference sequences from toy data"""
+        """Test getting reference sequences yields expected output.
+
+        Test on actual alignments from data rather than toy data.
+        """
+
+        # Only run tests on output if such files exist.
+        for alignment in ALIGNMENTS:
+            self.assertTrue(os.path.isfile(alignment))
+
+        gt_list = GT_A_LIST + GT_B_LIST
+
+        test_refs = genotype.getrefseqs(ALIGNMENTS[0], ALIGNMENTS[2])
+
+        for key in test_refs.keys():
+            self.assertTrue(key in gt_list)
+            # Empty strings are false. Ensure genotypes have seq.
+            self.assertTrue(test_refs[key])
 
 
-    def test_assigngt(self):
-        """Test assigning gneotypes with toy data"""
 
+    def test_assign_gt(self):
+        """Test assigning gneotypes with actual data.
+        
+        I have not created toy `.fasta` files for testing, so test on real
+        data.
+        There is a check to correct for mistyping in the main code, so 
+        just make sure output is as expected.
 
+        Check that if threshold is changed, number of mistypeds changes
+        as expected.
+        """
 
+        self.assertTrue(os.path.isfile(ALIGNMENTS[2]))
 
+        alignall = ALIGNMENTS[2]
 
+        # Assumes test_getrefseqs passes
 
+        test_refgts = genotype.getrefseqs(ALIGNMENTS[0], ALIGNMENTS[2])
+
+        threshold_norm = 150
+        threshold_lax = 50
+        threshold_strict = 200
+
+        assigngt_norm = genotype.assign_gt(alignall, test_refgts,
+                threshold_norm)
+        self.assertTrue(len(assigngt_norm[2])==assigngt_norm[1])
+
+        assigngt_lax = genotype.assign_gt(alignall, test_refgts,
+                threshold_lax)
+        self.assertTrue(len(assigngt_lax[2])==assigngt_lax[1])
+
+        assigngt_strict = genotype.assign_gt(alignall, test_refgts,
+                threshold_strict)
+        self.assertTrue(len(assigngt_strict[2])==assigngt_strict[1])
+
+        self.assertTrue(assigngt_strict[1] < assigngt_norm[1] < assigngt_lax[1])
 
 
 if __name__ == '__main__':
